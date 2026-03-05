@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SANTASHI</title>
+  <meta name="description" content="">
+<!-- 
+Motor Template
+http://www.templatemo.com/tm-463-motor
+-->
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,700' rel='stylesheet' type='text/css'>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/font-awesome.min.css" rel="stylesheet">
+  <link href="css/templatemo-style.css" rel="stylesheet">
+  <style>
+    /* Additional styles for horizontal alignment and cart storage */
+    .brands-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 50px;
+    }
+    
+    .brand-card {
+      flex: 0 0 32%;
+      text-align: center;
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+    }
+    
+    .brand-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .brand-card img {
+      max-height: 150px;
+      object-fit: contain;
+      margin: 0 auto 15px;
+    }
+    
+    .cart-storage {
+      margin-top: 40px;
+      padding: 30px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .cart-title {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #2c3e50;
+      border-bottom: 3px solid #e10c20;
+      padding-bottom: 10px;
+      display: inline-block;
+    }
+    
+    .cart-items-container {
+      min-height: 100px;
+    }
+    
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background-color: white;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .cart-item img {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    
+    .cart-item-details {
+      flex-grow: 1;
+      padding: 0 15px;
+    }
+    
+    .cart-item-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .cart-item-color {
+      color: #6c757d;
+      font-size: 0.9em;
+      margin-bottom: 5px;
+    }
+    
+    .cart-item-price {
+      color: #e10c20;
+      font-weight: 700;
+    }
+    
+    .cart-item-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .btn-order {
+      background: linear-gradient(135deg, #e10c20 0%, #c00a1c 100%);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .btn-order:hover {
+      background: linear-gradient(135deg, #c00a1c 0%, #a00818 100%);
+      transform: translateY(-2px);
+    }
+    
+    .btn-remove {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .btn-remove:hover {
+      background: #5a6268;
+    }
+    
+    .empty-cart-message {
+      text-align: center;
+      color: #6c757d;
+      font-style: italic;
+      padding: 30px;
+    }
+    
+    .order-success {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 12px;
+      border-radius: 5px;
+      margin-top: 15px;
+      text-align: center;
+      display: none;
+    }
+    
+    /* Order Form Styles */
+    .order-form-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .order-form-container {
+      background-color: white;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: 10px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+      padding: 30px;
+      position: relative;
+    }
+    
+    .order-form-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e10c20;
+    }
+    
+    .order-form-title {
+      font-size: 1.8rem;
+      color: #2c3e50;
+      margin: 0;
+    }
+    
+    .close-form-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6c757d;
+      transition: color 0.3s;
+    }
+    
+    .close-form-btn:hover {
+      color: #e10c20;
+    }
+    
+    .order-form-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .order-form-section {
+      margin-bottom: 20px;
+    }
+    
+    .order-form-section h3 {
+      font-size: 1.2rem;
+      color: #2c3e50;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #495057;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #e10c20;
+      box-shadow: 0 0 0 2px rgba(225, 12, 32, 0.2);
+    }
+    
+    .form-group-full {
+      grid-column: 1 / -1;
+    }
+    
+    .order-summary {
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .order-summary h4 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #2c3e50;
+    }
+    
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .summary-total {
+      font-weight: 700;
+      font-size: 1.1rem;
+      border-top: 1px solid #dee2e6;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .btn-cancel {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .btn-cancel:hover {
+      background: #5a6268;
+    }
+    
+    .btn-submit-order {
+      background: linear-gradient(135deg, #e10c20 0%, #c00a1c 100%);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-submit-order:hover {
+      background: linear-gradient(135deg, #c00a1c 0%, #a00818 100%);
+      transform: translateY(-2px);
+    }
+    
+    /* Debug styles */
+    .debug-info {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 1000;
+    }
+    
+    @media (max-width: 768px) {
+      .brand-card {
+        flex: 0 0 100%;
+        margin-bottom: 20px;
+      }
+      
+      .cart-item {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .cart-item-details {
+        padding: 15px 0;
+      }
+      
+      .cart-item-actions {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .order-form-content {
+        grid-template-columns: 1fr;
+      }
+      
+      .debug-info {
+        display: none;
+      }
+    }
+  </style>
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+      </head>
+      <body class="about-page">
+
+        <!-- Preloader -->
+        
+        <!-- Debug Info -->
+        
+    
+        <section class="templatemo-top-section">
+          <div class="templatemo-header">
+            <img class="templatemo-header-img" src="img/header.png" alt="Header">
+            <h1 class="templatemo-site-name">Motor</h1>
+            <div class="mobile-menu-icon">
+              <i class="fa fa-bars"></i>
+            </div>
+            <div class="templatemo-nav-container">
+              <nav class="templatemo-nav">
+                <ul>
+                 <li><a href="index.html" class="active">Home</a></li>
+                 <li><a href="products.html">Products</a></li>
+                 <li><a href="services.html">Payment</a></li>
+                 <li><a href="contact.html">Contact</a></li>
+                 <li><a href="login.html">Logout</a></li>
+               </ul>
+             </nav> 
+           </div>
+         </div>
+         <div class="templatemo-welcome welcome-slider">
+          <div class="container">
+            <div class="row">
+              <div class="flexslider">
+                <ul class="slides">
+                  <li>
+                    <div class="about-slider">
+                      <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                        <img src="img/about/SANTASHI.jpg" class="img-responsive" alt="Image">
+                      </div>
+                      <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 about-slider-description">
+                        <h2 class="text-uppercase welcome-title">
+                          	<span class="welcome-title-1">Performance</span>
+                      		<span class="welcome-title-2">for the speed</span>
+                        </h2>
+                        <p class=></p>
+                      </div>              
+                    </div>  
+                  </li>
+                  <li>
+                    <div class="about-slider">
+                      <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                        <img src="img/about/SANTASHI.jpg" class="img-responsive" alt="Image">
+                      </div>
+                      <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 about-slider-description">
+                        <h2 class="text-uppercase welcome-title">
+                          <span class="welcome-title-1">Find to own</span>
+                          <span class="welcome-title-2">the fast &amp; best</span>
+                        </h2>
+                        <p class="welcome-message"></p>
+                      </div>              
+                    </div>  
+                  </li>
+                </ul>
+              </div>                          
+            </div>    
+          </div>
+        </div>
+      </section>
+
+    
+    <section class="container margin-bottom-50"> 
+         
+      
+      
+      
+      <div class="cart-storage">
+        <h2 class="cart-title">Your Cart <span id="cart-badge" style="background: #e10c20; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; margin-left: 10px;">0</span></h2>
+        <div id="order-success" class="order-success">
+          <i class="fas fa-check-circle"></i> Order successful! This item will appear in the admin dashboard.
+        </div>
+        <div id="cart-items-container" class="cart-items-container">
+         
+          <div class="empty-cart-message">
+            <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 15px;"></i>
+            <p>Your cart is empty. Add cars to your cart from the products page.</p>
+          </div>
+        </div>
+        
+        
+       
+      </div>
+      
+    </section> 
+    
+    <!-- Order Form Overlay -->
+    <div id="order-form-overlay" class="order-form-overlay">
+      <div class="order-form-container">
+        <div class="order-form-header">
+          <h2 class="order-form-title">Complete Your Order</h2>
+          <button class="close-form-btn" id="close-form-btn">&times;</button>
+        </div>
+        <form id="order-form">
+          <div class="order-form-content">
+            <!-- Personal Information -->
+            <div class="order-form-section">
+              <h3>Personal Information</h3>
+              <div class="form-group">
+                <label for="first-name">First Name *</label>
+                <input type="text" id="first-name" name="first-name" required>
+              </div>
+              <div class="form-group">
+                <label for="last-name">Last Name *</label>
+                <input type="text" id="last-name" name="last-name" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required>
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                <input type="tel" id="phone" name="phone" required>
+              </div>
+              
+            </div>
+            
+            <!-- Address Information -->
+            <div class="order-form-section">
+              <h3>Address Information</h3>
+              <div class="form-group">
+                <label for="address">Street Address *</label>
+                <input type="text" id="address" name="address" required>
+              </div>
+              <div class="form-group">
+                <label for="city">City *</label>
+                <input type="text" id="city" name="city" required>
+              </div>
+              <div class="form-group">
+                <label for="state">State/Province *</label>
+                <input type="text" id="state" name="state" required>
+              </div>
+              <div class="form-group">
+                <label for="zip">ZIP/Postal Code *</label>
+                <input type="text" id="zip" name="zip" required>
+              </div>
+              <div class="form-group">
+                <label for="country">Country *</label>
+                <select id="country" name="country" required>
+                  <option value="">Select Country</option>
+                  <option value="Philippines">Philippines</option>
+                  <option value="USA">United States</option>
+                  <option value="UK">United Kingdom</option>
+                  <option value="Canada">Canada</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Japan">Japan</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Payment Information -->
+            <div class="order-form-section form-group-full">
+              <h3>Payment Information</h3>
+              <div class="form-group">
+                <label for="payment-method">Payment Method *</label>
+                <select id="payment-method" name="payment-method" required>
+                  <option value="">Select Payment Method</option>
+                  <option value="bank-transfer">Bank Transfer</option>
+                  <option value="credit-card">Credit Card</option>
+                  <option value="debit-card">Debit Card</option>
+                  <option value="financing">Financing</option>
+                  <option value="cash">Cash</option>
+                </select>
+              </div>
+              
+              <!-- Conditional fields based on payment method -->
+              <div id="credit-card-fields" style="display: none;">
+                <div class="form-group">
+                  <label for="card-number">Card Number *</label>
+                  <input type="text" id="card-number" name="card-number" placeholder="1234 5678 9012 3456">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                  <div class="form-group">
+                    <label for="expiry-date">Expiry Date *</label>
+                    <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY">
+                  </div>
+                  <div class="form-group">
+                    <label for="cvv">CVV *</label>
+                    <input type="text" id="cvv" name="cvv" placeholder="123">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="cardholder-name">Cardholder Name *</label>
+                  <input type="text" id="cardholder-name" name="cardholder-name">
+                </div>
+              </div>
+              
+              <div id="financing-fields" style="display: none;">
+                <div class="form-group">
+                  <label for="down-payment">Down Payment Amount *</label>
+                  <input type="text" id="down-payment" name="down-payment">
+                </div>
+                <div class="form-group">
+                  <label for="loan-term">Preferred Loan Term *</label>
+                  <select id="loan-term" name="loan-term">
+                    <option value="">Select Term</option>
+                    <option value="12">12 months</option>
+                    <option value="24">24 months</option>
+                    <option value="36">36 months</option>
+                    <option value="48">48 months</option>
+                    <option value="60">60 months</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Additional Information -->
+            <div class="order-form-section form-group-full">
+              <h3>Additional Information</h3>
+              <div class="form-group">
+                <label for="preferred-delivery">Preferred Delivery Date</label>
+                <input type="date" id="preferred-delivery" name="preferred-delivery">
+              </div>
+              <div class="form-group">
+                <label for="trade-in">Trade-in Vehicle (if applicable)</label>
+                <input type="text" id="trade-in" name="trade-in" placeholder="Make, Model, Year">
+              </div>
+              <div class="form-group">
+                <label for="comments">Additional Comments or Special Requests</label>
+                <textarea id="comments" name="comments" rows="3"></textarea>
+              </div>
+            </div>
+            
+            <!-- Order Summary -->
+            <div class="order-form-section form-group-full">
+              <div class="order-summary">
+                <h4>Order Summary</h4>
+                <div id="order-summary-content">
+                  <!-- Summary will be populated by JavaScript -->
+                </div>
+              </div>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <button type="button" class="btn-cancel" id="cancel-order">Cancel</button>
+              <button type="submit" class="btn-submit-order">Complete Order</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <footer class="tm-footer">
+      <div class="container">
+        <div class="row margin-bottom-60">
+          <nav class="col-lg-3 col-md-3 tm-footer-nav tm-footer-div">
+            <h3 class="tm-footer-div-title">Main Menu</h3>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="products.html">Products</a></li>
+              <li><a href="services.html">Payment</a></li>
+               <li><a href="gallery.html">Gallery</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+          </nav>
+          <div class="col-lg-5 col-md-5 tm-footer-div">
+            <h3 class="tm-footer-div-title">About Us</h3>
+            <p class="margin-top-15">At CarVision 3D, we transform car brochures into interactive experiences. With 360° 3D models, customers can explore every angle, open doors, and see the details up close. We make car shopping more engaging, immersive, and unforgettable.</p>
+          
+          </div>
+          <div class="col-lg-4 col-md-4 tm-footer-div">
+            <h3 class="tm-footer-div-title">Get Social</h3>
+            <p>For more Info contact us in our social media's.</p>
+            <div class="tm-social-icons-container">
+              <a href="#" class="tm-social-icon"><i class="fa fa-facebook"></i></a>
+             <a href="#" class="tm-social-icon"><i class='fa fa-envelope'></i></a>
+              <a href="#" class="tm-social-icon"><i class='fa fa-instagram'></i></a>
+              
+            </div>
+          </div>
+        </div>
+        <div class="row tm-copyright">
+          <p class="col-lg-12 small copyright-text text-center">Copyright &copy; Car dealership</p>
+        </div>
+      </div>
+    </footer> 
+    
+    
+    <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>      
+    <script type="text/javascript" src="js/templatemo-script.js"></script>      
+    <script defer src="js/jquery.flexslider-min.js"></script>
+    
+        <script>
+      let currentOrderIndex = -1;
+      
+      function loadCartItems() {
+        console.log('Loading cart items...');
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const cartContainer = document.getElementById('cart-items-container');
+        const cartBadge = document.getElementById('cart-badge');
+        
+        console.log('Cart items found:', cartItems);
+        
+        
+        if (document.getElementById('cartCount')) {
+          document.getElementById('cartCount').textContent = cartItems.length;
+        }
+        if (document.getElementById('cartStatus')) {
+          document.getElementById('cartStatus').textContent = 'Loaded';
+        }
+        
+        
+        if (cartBadge) {
+          cartBadge.textContent = cartItems.length;
+        }
+        
+        if (cartItems.length === 0) {
+          if (cartContainer) {
+            cartContainer.innerHTML = `
+              <div class="empty-cart-message">
+                <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                <p>Your car is empty. Add cars to your cart from the products page.</p>
+              </div>
+            `;
+          }
+          return;
+        }
+        
+        let cartHTML = '';
+        cartItems.forEach((item, index) => {
+          cartHTML += `
+            <div class="cart-item" data-index="${index}">
+              <img src="${item.image || 'img/default-car.jpg'}" alt="${item.name}" onerror="this.src='img/default-car.jpg'">
+              <div class="cart-item-details">
+                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-color">${item.color || ''}</div>
+                <div class="cart-item-price">${item.price}</div>
+              </div>
+              <div class="cart-item-actions">
+                <button class="btn-order" onclick="showOrderForm(${index})">Order</button>
+                <button class="btn-remove" onclick="removeFromCart(${index})">Remove</button>
+              </div>
+            </div>
+          `;
+        });
+        
+        if (cartContainer) {
+          cartContainer.innerHTML = cartHTML;
+        }
+      }
+      
+      
+      function removeFromCart(index) {
+        let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        if (index >= 0 && index < cartItems.length) {
+          const removedItem = cartItems.splice(index, 1);
+          localStorage.setItem('cartItems', JSON.stringify(cartItems));
+          console.log('Removed item:', removedItem);
+          
+          
+          loadCartItems();
+        }
+      }
+      
+      
+      function showOrderForm(index) {
+        currentOrderIndex = index;
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const item = cartItems[index];
+        
+        if (!item) {
+          alert('Item not found in cart!');
+          return;
+        }
+        
+        // Update order summary
+        const summaryContent = document.getElementById('order-summary-content');
+        summaryContent.innerHTML = `
+          <div class="summary-item">
+            <span>Vehicle:</span>
+            <span>${item.name}</span>
+          </div>
+          <div class="summary-item">
+            <span>Color:</span>
+            <span>${item.color || 'Not specified'}</span>
+          </div>
+          <div class="summary-item summary-total">
+            <span>Total Price:</span>
+            <span>${item.price}</span>
+          </div>
+        `;
+        
+        // Show the form
+        document.getElementById('order-form-overlay').style.display = 'flex';
+      }
+      
+      
+      function hideOrderForm() {
+        document.getElementById('order-form-overlay').style.display = 'none';
+        document.getElementById('order-form').reset();
+        currentOrderIndex = -1;
+      }
+      
+      
+      function processOrder(formData) {
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const orderedItem = cartItems[currentOrderIndex];
+        
+        if (!orderedItem) {
+          alert('Item not found in cart!');
+          return false;
+        }
+        
+        // Create order record
+        let adminOrders = JSON.parse(localStorage.getItem('adminOrders')) || [];
+        
+        const order = {
+          id: 'ORD' + Date.now(),
+          model: orderedItem.name,
+          price: orderedItem.price,
+          color: orderedItem.color,
+          timestamp: new Date().toISOString(),
+          status: 'Pending',
+          customer: formData['first-name'] + ' ' + formData['last-name'],
+          customerEmail: formData['email'],
+          customerPhone: formData['phone'],
+          customerAddress: formData['address'] + ', ' + formData['city'] + ', ' + formData['state'] + ' ' + formData['zip'],
+          paymentMethod: formData['payment-method'],
+          deliveryDate: formData['preferred-delivery'] || 'Not specified',
+          comments: formData['comments'] || 'None'
+        };
+        
+        adminOrders.push(order);
+        localStorage.setItem('adminOrders', JSON.stringify(adminOrders));
+        
+        // Remove from cart
+        cartItems.splice(currentOrderIndex, 1);
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        
+        // Show success message
+        const successMsg = document.getElementById('order-success');
+        if (successMsg) {
+          successMsg.style.display = 'block';
+          setTimeout(() => {
+            successMsg.style.display = 'none';
+          }, 5000);
+        }
+        
+        // Reload cart
+        loadCartItems();
+        
+        console.log('Order recorded:', order);
+        return true;
+      }
+
+      // Function to show custom approval message
+      function showApprovalMessage() {
+        // Create custom modal for the approval message
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.7);
+          z-index: 2000;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        `;
+        
+        modal.innerHTML = `
+          <div style="
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+          ">
+            <div style="font-size: 3rem; color: #3498db; margin-bottom: 20px;">
+              <i class="fas fa-clock"></i>
+            </div>
+            <h2 style="color: #2c3e50; margin-bottom: 15px;">Order Submitted</h2>
+            <p style="color: #6c757d; font-size: 3rem; line-height: 1.6; margin-bottom: 25px;">
+              You can proceed to the next step if the credit investigation is approved by the branch.
+            </p>
+            <p style="color: #6c757d; font-size: 2rem; margin-bottom: 25px;">
+              Our team will contact you within 24-48 hours to discuss the next steps.
+            </p>
+            <button id="close-approval-modal" style="
+              background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+              color: white;
+              border: none;
+              padding: 12px 30px;
+              border-radius: 5px;
+              font-weight: 600;
+              cursor: pointer;
+              font-size: 1rem;
+              transition: all 0.3s;
+            ">
+              Understood
+            </button>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Add event listener to close button
+        document.getElementById('close-approval-modal').addEventListener('click', function() {
+          document.body.removeChild(modal);
+        });
+        
+        // Also close when clicking outside the modal
+        modal.addEventListener('click', function(e) {
+          if (e.target === modal) {
+            document.body.removeChild(modal);
+          }
+        });
+      }
+      
+      function testCart() {
+        const testItems = [
+          {
+            name: 'Toyota Vios 1.5 G M/T',
+            price: '₱ 979,000',
+            color: 'Super Red V',
+            image: 'img/vios9.png',
+            timestamp: new Date().toISOString()
+          },
+          {
+            name: 'Toyota Fortuner',
+            price: '₱ 1,750,000',
+            color: 'White Pearl',
+            image: 'img/fortuner.jpg',
+            timestamp: new Date().toISOString()
+          }
+        ];
+        
+        localStorage.setItem('cartItems', JSON.stringify(testItems));
+        loadCartItems();
+        alert('Test items added to cart!');
+      }
+      
+      
+      function clearCart() {
+        localStorage.removeItem('cartItems');
+        loadCartItems();
+        alert('Cart cleared!');
+      }
+
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('Homepage loaded, loading cart items...');
+        loadCartItems();
+        
+        // Set up form event listeners
+        document.getElementById('close-form-btn').addEventListener('click', hideOrderForm);
+        document.getElementById('cancel-order').addEventListener('click', hideOrderForm);
+        
+        // Payment method change handler
+        document.getElementById('payment-method').addEventListener('change', function() {
+          const method = this.value;
+          document.getElementById('credit-card-fields').style.display = 
+            (method === 'credit-card' || method === 'debit-card') ? 'block' : 'none';
+          document.getElementById('financing-fields').style.display = 
+            method === 'financing' ? 'block' : 'none';
+        });
+        
+        // Form submission handler
+        document.getElementById('order-form').addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          // Collect form data
+          const formData = {};
+          const formElements = this.elements;
+          for (let i = 0; i < formElements.length; i++) {
+            const element = formElements[i];
+            if (element.name && element.value) {
+              formData[element.name] = element.value;
+            }
+          }
+          
+          // Process the order
+          if (processOrder(formData)) {
+            hideOrderForm();
+            
+            // Show the custom approval message instead of the generic alert
+            showApprovalMessage();
+            
+            // Remove the old generic alert
+            // alert('Order completed successfully! You will receive a confirmation email shortly.');
+          }
+        });
+        
+        // Set interval to reload cart (for testing)
+        setInterval(loadCartItems, 2000);
+      });
+
+      $(window).load(function() {
+        $('.flexslider').flexslider({
+          animation: "slide",
+          slideshow: false,
+          prevText: "&#xf104;",
+          nextText: "&#xf105;"
+        });
+
+       
+        $('body').addClass('loaded');
+      });
+    </script>
+    <!-- Add this script right before the closing </body> tag in your index.html -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load About Us content from localStorage
+    loadAboutUsContent();
+    
+    // Rest of your existing code...
+});
+
+function loadAboutUsContent() {
+    const aboutUsElement = document.querySelector('.tm-footer-div p.margin-top-15');
+    const savedAboutUs = localStorage.getItem('aboutUsContent');
+    
+    if (aboutUsElement && savedAboutUs) {
+        // Split the content into paragraphs if it contains line breaks
+        const paragraphs = savedAboutUs.split('\n').filter(p => p.trim() !== '');
+        if (paragraphs.length > 0) {
+            aboutUsElement.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+        } else {
+            aboutUsElement.textContent = savedAboutUs;
+        }
+    } else if (aboutUsElement && !savedAboutUs) {
+        // Use default content if nothing is saved
+        aboutUsElement.textContent = 'At CarVision 3D, we transform car brochures into interactive experiences. With 360° 3D models, customers can explore every angle, open doors, and see the details up close. We make car shopping more engaging, immersive, and unforgettable.';
+    }
+}
+
+// Listen for storage events to update About Us content in real-time
+window.addEventListener('storage', function(e) {
+    if (e.key === 'aboutUsContent') {
+        loadAboutUsContent();
+    }
+});
+</script>
+  </body>
+</html>

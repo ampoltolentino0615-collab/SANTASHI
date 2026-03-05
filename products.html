@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SANTASHI - Products</title>
+  <meta name="description" content="">
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,700' rel='stylesheet' type='text/css'>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/font-awesome.min.css" rel="stylesheet">
+  <link href="css/templatemo-style.css" rel="stylesheet">
+
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- GLTFLoader for loading GLB files -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <!-- OrbitControls for camera controls -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    /* Modal styles for 3D viewer - Added without affecting existing styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
+    }
+    
+    .modal-content {
+      position: relative;
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 1000px;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    }
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      z-index: 10;
+    }
+    
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    /* 3D Viewer styles */
+    .viewer-container {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      background-color: #f5f5f5;
+      overflow: hidden;
+    }
+    
+    #carViewerModal {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    
+    .viewer-controls {
+      background-color: #333;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    
+    .viewer-controls button {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .viewer-controls button:hover {
+      background-color: #c0392b;
+    }
+    
+    .loading-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #333;
+      font-size: 18px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 10px 20px;
+      border-radius: 5px;
+      display: none;
+    }
+    
+    .viewer-stats {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+    
+    .car-info-sidebar {
+      background-color: white;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-top: 15px;
+    }
+    
+    .btn-3d {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-left: 10px;
+      font-size: 12px;
+    }
+    
+    .btn-3d:hover {
+      background-color: #2980b9;
+    }
+    
+    .btn-3d:disabled {
+      background-color: #95a5a6;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .tm-item-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    /* Enhanced Search Bar Styles */
+    .search-container {
+      margin-bottom: 30px;
+    }
+    
+    .search-row {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .search-box-wrapper {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    
+    .search-box {
+      width: 100%;
+      padding: 15px 50px 15px 20px;
+      border: 2px solid #e74c3c;
+      border-radius: 30px;
+      font-size: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .search-box:focus {
+      outline: none;
+      box-shadow: 0 4px 20px rgba(231, 76, 60, 0.2);
+      border-color: #c0392b;
+    }
+    
+    .search-icon {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #e74c3c;
+      font-size: 20px;
+    }
+    
+    .search-label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+    
+    .search-label i {
+      margin-right: 5px;
+      color: #e74c3c;
+    }
+    
+    .transmission-options {
+      display: flex;
+      gap: 10px;
+      margin-top: 5px;
+    }
+    
+    .transmission-option {
+      flex: 1;
+      background: white;
+      border: 2px solid #ddd;
+      border-radius: 30px;
+      padding: 12px 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .transmission-option:hover {
+      border-color: #e74c3c;
+      background: #fff5f3;
+    }
+    
+    .transmission-option.active {
+      background: #e74c3c;
+      border-color: #e74c3c;
+      color: white;
+    }
+    
+    .transmission-option.active i {
+      color: white;
+    }
+    
+    .price-inputs {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .price-input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid #ddd;
+      border-radius: 30px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .price-input:focus {
+      outline: none;
+      border-color: #e74c3c;
+    }
+    
+    .price-separator {
+      color: #999;
+      font-weight: bold;
+    }
+    
+    .clear-filters {
+      background: #333;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    
+    .clear-filters:hover {
+      background: #555;
+    }
+    
+    .active-filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 15px 0;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 30px;
+    }
+    
+    .filter-tag {
+      background: #e74c3c;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .filter-tag i {
+      cursor: pointer;
+    }
+    
+    .filter-tag i:hover {
+      opacity: 0.8;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 50px 20px;
+      color: #666;
+      display: none;
+    }
+    
+    .no-results i {
+      font-size: 60px;
+      margin-bottom: 20px;
+      color: #ddd;
+    }
+    
+    .no-results h3 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+    
+    .search-info {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+
+    /* Sold Out Overlay Styles */
+    .car-item {
+      position: relative;
+    }
+    
+    .sold-out-overlay {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .sold-out-overlay::after {
+      content: "SOLD OUT";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-15deg);
+      background: rgba(231, 76, 60, 0.9);
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 5px;
+      z-index: 10;
+      white-space: nowrap;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      border: 2px solid white;
+      pointer-events: none;
+    }
+    
+    .car-item.sold-out .tm-item-actions a,
+    .car-item.sold-out .tm-item-actions button {
+      pointer-events: none;
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .car-item.sold-out img {
+      opacity: 0.7;
+      filter: grayscale(50%);
+    }
+    
+    .price-display {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #e74c3c;
+      margin: 5px 0;
+    }
+    
+    /* Price update animation */
+    .price-updated {
+      animation: priceFlash 0.5s ease;
+    }
+    
+    @keyframes priceFlash {
+      0% { background-color: rgba(241, 196, 15, 0.3); }
+      100% { background-color: transparent; }
+    }
+    
+    /* Dynamic cars container */
+    .dynamic-cars {
+      display: contents;
+    }
+    
+    /* Notification styles */
+    .notification-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 5px;
+      z-index: 10000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      max-width: 300px;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    .notification-message.success {
+      background-color: #2ecc71;
+      color: white;
+    }
+    
+    .notification-message.error {
+      background-color: #e74c3c;
+      color: white;
+    }
+    
+    .notification-message.info {
+      background-color: #3498db;
+      color: white;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0%); opacity: 1; }
+    }
+
+    /* Image navigation and badges */
+    .car-image-container {
+      position: relative;
+      width: 200px;
+      height: 150px;
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 5px;
+    }
+    
+    .car-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .image-nav {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+      z-index: 5;
+    }
+    
+    .prev-image, .next-image {
+      pointer-events: auto;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      opacity: 0;
+    }
+    
+    .car-image-container:hover .prev-image,
+    .car-image-container:hover .next-image {
+      opacity: 1;
+    }
+    
+    .prev-image:hover, .next-image:hover {
+      background: rgba(0,0,0,0.8);
+      transform: scale(1.1);
+    }
+    
+    .prev-image {
+      margin-left: 5px;
+    }
+    
+    .next-image {
+      margin-right: 5px;
+    }
+    
+    .image-count-badge {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      z-index: 5;
+    }
+    
+    .model-badge {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: #3498db;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      z-index: 5;
+    }
+    
+    .model-badge i {
+      margin-right: 3px;
+    }
+  </style>
+</head>
+<body>
+  <section class="templatemo-top-section">
+    <div class="templatemo-header">
+      <img class="templatemo-header-img" src="img/header.png" alt="Header">
+      <h1 class="templatemo-site-name">Motor</h1>
+      <div class="mobile-menu-icon">
+        <i class="fa fa-bars"></i>
+      </div>
+      <div class="templatemo-nav-container">
+        <nav class="templatemo-nav">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html" class="active">Products</a></li>
+            <li><a href="services.html">Payment</a></li>
+            <li><a href="contact.html">contacts</a></li>
+            <li><a href="login.html">logout</a></li>
+          </ul>
+        </nav> 
+      </div>
+    </div>
+    <div class="templatemo-welcome">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-7 col-md-7 col-sm-6 col-xs-12">
+            <img src="img/welcome-img.png" class="img-responsive welcome-img" alt="Welcome">
+          </div>
+          <div class="col-lg-5 col-md-5 col-sm-6 col-xs-12">
+            <h2 class="text-uppercase">
+              <span class="welcome-title-1">WELCOME TO 3D CAR BROCHURE</span>
+            </h2>
+            <p class="welcome-message" style="cursor: default; pointer-events: none;">This brochure can help you to see your future car even if you're too far from the car dealership</p>
+          </div>
+        </div>    
+      </div>
+    </div>
+  </section>
+  
+  <section class="container margin-bottom-50">
+    <div class="row">
+      <h2 class="col-lg-12 text-center text-uppercase margin-bottom-30">Find your perfect car</h2>
+      <p class="search-info">Search by price range, brand, or transmission type</p>
+      
+      <!-- Enhanced Search Bar with 3 options -->
+      <div class="col-lg-12 search-container">
+        <!-- Active Filters Display -->
+        <div class="active-filters" id="activeFilters" style="display: none;">
+          <span class="filter-tag" id="brandFilterTag" style="display: none;">
+            Brand: <span id="brandFilterValue"></span> <i class="fa fa-times" onclick="clearBrandFilter()"></i>
+          </span>
+          <span class="filter-tag" id="priceFilterTag" style="display: none;">
+            Price: <span id="priceFilterValue"></span> <i class="fa fa-times" onclick="clearPriceFilter()"></i>
+          </span>
+          <span class="filter-tag" id="transmissionFilterTag" style="display: none;">
+            Transmission: <span id="transmissionFilterValue"></span> <i class="fa fa-times" onclick="clearTransmissionFilter()"></i>
+          </span>
+        </div>
+        
+        <div class="search-row">
+          <!-- Brand Search -->
+          <div class="search-box-wrapper">
+            <span class="search-label"><i class="fa fa-tag"></i> BRAND</span>
+            <input type="text" class="search-box" id="brandSearch" placeholder="e.g., Toyota, Suzuki, Mitsubishi">
+            <div class="search-icon">
+              <i class="fa fa-search"></i>
+            </div>
+          </div>
+          
+          <!-- Price Range Search -->
+          <div class="search-box-wrapper">
+            <span class="search-label"><i class="fa fa-money"></i> PRICE RANGE (₱)</span>
+            <div class="price-inputs">
+              <input type="number" class="price-input" id="minPrice" placeholder="Min" min="0" step="10000">
+              <span class="price-separator">-</span>
+              <input type="number" class="price-input" id="maxPrice" placeholder="Max" min="0" step="10000">
+            </div>
+          </div>
+          
+          <!-- Transmission Type Search -->
+          <div class="search-box-wrapper">
+            <span class="search-label"><i class="fa fa-gear"></i> TRANSMISSION</span>
+            <div class="transmission-options">
+              <div class="transmission-option" onclick="setTransmission('manual')">
+                <i class="fa fa-exchange"></i> Manual
+              </div>
+              <div class="transmission-option" onclick="setTransmission('automatic')">
+                <i class="fa fa-cog"></i> Automatic
+              </div>
+              <div class="transmission-option" onclick="setTransmission('hybrid')">
+                <i class="fa fa-leaf"></i> Hybrid
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Clear Filters Button -->
+        <div style="text-align: center; margin-top: 20px;">
+          <button class="clear-filters" onclick="clearAllFilters()">
+            <i class="fa fa-times-circle"></i> Clear All Filters
+          </button>
+        </div>
+      </div>
+      
+      <!-- No Results Message -->
+      <div class="col-lg-12 no-results" id="noResults">
+        <i class="fa fa-car"></i>
+        <h3>No Cars Found</h3>
+        <p>We couldn't find any cars matching your filters.</p>
+        <p>Try adjusting your search criteria.</p>
+      </div>
+    </div>
+  </section>    
+
+  <section class="container margin-bottom-50">
+    <div class="tm-overflow-hidden row">
+      <div class="tm-gallery col-lg-12 col-md-12 col-sm-12 col-xs-12" id="carsGallery">
+        <!-- All cars will be dynamically rendered here based on inventory from admin dashboard -->
+      </div>
+    </div>
+  </section> 
+ 
+  <!-- 3D Viewer Modal -->
+  <div id="viewerModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3 id="modalCarName">3D Car Viewer</h3>
+      
+      <div class="row">
+        <div class="col-lg-8 col-md-8 col-sm-12">
+          <div class="viewer-container">
+            <canvas id="carViewerModal"></canvas>
+            <div class="loading-indicator" id="loadingIndicatorModal">Loading 3D Model...</div>
+            <div class="viewer-stats" id="viewerStatsModal"></div>
+          </div>
+          
+          <div class="viewer-controls">
+            <button id="rotateLeftModal"><i class="fa fa-rotate-left"></i> Rotate Left</button>
+            <button id="rotateRightModal"><i class="fa fa-rotate-right"></i> Rotate Right</button>
+            <button id="zoomInModal"><i class="fa fa-search-plus"></i> Zoom In</button>
+            <button id="zoomOutModal"><i class="fa fa-search-minus"></i> Zoom Out</button>
+            <button id="resetViewModal"><i class="fa fa-refresh"></i> Reset View</button>
+          </div>
+        </div>
+        
+        <div class="col-lg-4 col-md-4 col-sm-12">
+          <div class="car-info-sidebar">
+            <div class="car-specs">
+              <h4>Specifications</h4>
+              <ul>
+                <li><strong>Engine:</strong> <span id="engineSpecModal">2.5L 4-cylinder</span></li>
+                <li><strong>Horsepower:</strong> <span id="horsepowerSpecModal">203 hp</span></li>
+                <li><strong>Transmission:</strong> <span id="transmissionSpecModal">8-speed automatic</span></li>
+                <li><strong>Fuel Economy:</strong> <span id="fuelSpecModal">28 city / 39 highway</span></li>
+                <li><strong>Seating Capacity:</strong> <span id="seatingSpecModal">5</span></li>
+              </ul>
+            </div>
+            <div class="car-features">
+              <h4>Key Features</h4>
+              <ul id="featuresListModal">
+                <li>Apple CarPlay & Android Auto</li>
+                <li>Blind Spot Monitor</li>
+                <li>Lane Departure Alert</li>
+                <li>Adaptive Cruise Control</li>
+                <li>Premium Audio System</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="tm-footer">
+    <div class="container">
+      <div class="row margin-bottom-60">
+        <nav class="col-lg-3 col-md-3 tm-footer-nav tm-footer-div">
+          <h3 class="tm-footer-div-title">Main Menu</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html" class="active">Products</a></li>
+            <li><a href="services.html">Payment</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </nav>
+        <div class="col-lg-5 col-md-5 tm-footer-div">
+          <h3 class="tm-footer-div-title">About Us</h3>
+          <p class="margin-top-15">At CarVision 3D, we transform car brochures into interactive experiences. With 360° 3D models, customers can explore every angle, open doors, and see the details up close. We make car shopping more engaging, immersive, and unforgettable.</p>
+        </div>
+        <div class="col-lg-4 col-md-4 tm-footer-div">
+          <h3 class="tm-footer-div-title">Get Social</h3>
+          <p>For more Info contact us in our social media's.</p>
+          <div class="tm-social-icons-container">
+            <a href="#" class="tm-social-icon"><i class="fa fa-facebook"></i></a>
+            <a href="#" class="tm-social-icon"><i class='fa fa-envelope'></i></a>
+            <a href="#" class="tm-social-icon"><i class='fa fa-instagram'></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="row tm-copyright">
+        <p class="col-lg-12 small copyright-text text-center">Copyright &copy; Car dealership</p>
+      </div>
+    </div>
+  </footer> 
+  
+  <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>      
+  <script type="text/javascript" src="js/templatemo-script.js"></script>      
+  
+  <script>
+    // 3D Viewer functionality
+    let scene, camera, renderer, controls, carModel;
+    let isInteriorView = false;
+    let currentModelKey = '';
+    
+    // Car model data with GLB file paths
+    const carModels = {
+      toyota: {
+        name: "Toyota Vios",
+        engine: "2.5L 4-cylinder",
+        horsepower: "203 hp",
+        transmission: "8-speed automatic",
+        fuel: "28 city / 39 highway",
+        seating: "5",
+        glbPath: "models/vios.glb",
+        features: [
+          "Apple CarPlay & Android Auto",
+          "Blind Spot Monitor",
+          "Lane Departure Alert",
+          "Adaptive Cruise Control",
+          "Premium Audio System"
+        ]
+      },
+      mitsubishi: {
+        name: "Mitsubishi Xpander",
+        engine: "1.2L 4-cylinder",
+        horsepower: "82 hp",
+        transmission: "5-speed manual",
+        fuel: "31 city / 40 highway",
+        seating: "5",
+        glbPath: "models/Xpander.glb",
+        features: [
+          "Touchscreen Infotainment",
+          "Rearview Camera",
+          "Automatic Climate Control",
+          "Keyless Entry",
+          "LED Headlights"
+        ]
+      },
+      suzuki: {
+        name: "Suzuki Fronx",
+        engine: "1.5L 4-cylinder",
+        horsepower: "103 hp",
+        transmission: "5-speed manual",
+        fuel: "25 city / 35 highway",
+        seating: "5",
+        glbPath: "models/suzuki_fronx.glb",
+        features: [
+          "Touchscreen Display",
+          "Rear Parking Sensors",
+          "Automatic Climate Control",
+          "Keyless Entry",
+          "LED DRLs"
+        ]
+      }
+    };
+    
+    // Modal functionality
+    const modal = document.getElementById("viewerModal");
+    const span = document.getElementsByClassName("close")[0];
+    
+    // When the user clicks on a 3D View button, open the modal
+    $(document).on('click', '.btn-3d:not(:disabled)', function() {
+      const carItem = $(this).closest('.car-item');
+      const carId = carItem.data('car-id');
+      const inventory = loadInventory();
+      const car = inventory.find(c => c.id === carId);
+      
+      if (car && car.modelFileId) {
+        // Load custom 3D model from IndexedDB
+        loadCustomModelFromDB(car);
+      } else {
+        // Load default model based on brand
+        currentModelKey = $(this).data('model');
+        const carName = $(this).data('name');
+        $('#modalCarName').text(carName);
+        
+        // Show modal
+        modal.style.display = "block";
+        
+        // Initialize or reinitialize Three.js
+        if (!scene) {
+          initThreeJS();
+        } else {
+          loadModel(currentModelKey);
+        }
+      }
+    });
+    
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+    
+    // Initialize Three.js scene with improved lighting
+    function initThreeJS() {
+      // Create scene
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x222222); // Darker background for better contrast
+      
+      // Create camera
+      const canvas = document.getElementById('carViewerModal');
+      camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+      camera.position.set(5, 2, 5);
+      
+      // Create renderer
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      
+      // IMPROVED LIGHTING SETUP
+      
+      // 1. Ambient light - base illumination
+      const ambientLight = new THREE.AmbientLight(0x404060, 1.0);
+      scene.add(ambientLight);
+      
+      // 2. Main directional light (key light) - from front/side
+      const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
+      keyLight.position.set(5, 5, 5);
+      keyLight.castShadow = true;
+      keyLight.receiveShadow = true;
+      keyLight.shadow.mapSize.width = 1024;
+      keyLight.shadow.mapSize.height = 1024;
+      const d = 10;
+      keyLight.shadow.camera.left = -d;
+      keyLight.shadow.camera.right = d;
+      keyLight.shadow.camera.top = d;
+      keyLight.shadow.camera.bottom = -d;
+      keyLight.shadow.camera.near = 1;
+      keyLight.shadow.camera.far = 15;
+      scene.add(keyLight);
+      
+      // 3. Fill light - from opposite side
+      const fillLight = new THREE.DirectionalLight(0xffeedd, 0.8);
+      fillLight.position.set(-5, 3, 5);
+      scene.add(fillLight);
+      
+      // 4. Back light - rim lighting
+      const backLight = new THREE.DirectionalLight(0xffffff, 0.6);
+      backLight.position.set(0, 2, -8);
+      scene.add(backLight);
+      
+      // 5. Top light - overhead illumination
+      const topLight = new THREE.DirectionalLight(0xffffff, 0.7);
+      topLight.position.set(0, 8, 0);
+      scene.add(topLight);
+      
+      // 6. Additional point lights for even illumination
+      const pointLight1 = new THREE.PointLight(0x4466ff, 0.5);
+      pointLight1.position.set(3, 1, 3);
+      scene.add(pointLight1);
+      
+      const pointLight2 = new THREE.PointLight(0xff6644, 0.4);
+      pointLight2.position.set(-3, 1, -3);
+      scene.add(pointLight2);
+      
+      // Add a subtle grid helper for reference (optional)
+      const gridHelper = new THREE.GridHelper(20, 20, 0x888888, 0x444444);
+      gridHelper.position.y = -0.5;
+      scene.add(gridHelper);
+      
+      // Add controls
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.minDistance = 2;
+      controls.maxDistance = 20;
+      controls.autoRotate = false;
+      controls.enableZoom = true;
+      controls.target.set(0, 0, 0);
+      
+      // Handle window resize
+      window.addEventListener('resize', onWindowResize);
+      
+      // Start animation loop
+      animate();
+    }
+    
+    // ==================== INDEXEDDB SETUP ====================
+    const DB_NAME = 'CarModelDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'modelFiles';
+    
+    let db = null;
+
+    // Open IndexedDB
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onerror = (event) => {
+          console.error('IndexedDB error:', event.target.error);
+          reject(event.target.error);
+        };
+        
+        request.onsuccess = (event) => {
+          db = event.target.result;
+          console.log('IndexedDB opened successfully');
+          resolve(db);
+        };
+        
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            // Create object store for model files
+            const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            store.createIndex('carId', 'carId', { unique: false });
+            console.log('Object store created');
+          }
+        };
+      });
+    }
+
+    // Get model files from IndexedDB
+    async function getModelFiles(carId) {
+      if (!db) await openDB();
+      
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction([STORE_NAME], 'readonly');
+        const store = transaction.objectStore(STORE_NAME);
+        const request = store.get(carId);
+        
+        request.onsuccess = () => {
+          resolve(request.result);
+        };
+        
+        request.onerror = (event) => {
+          console.error('Error reading from IndexedDB:', event.target.error);
+          reject(event.target.error);
+        };
+      });
+    }
+
+    // Load custom 3D model from IndexedDB - FIXED with proper lighting and scaling
+    async function loadCustomModelFromDB(car) {
+      if (!car || !car.modelFileId) {
+        console.error('No model data available');
+        alert('No 3D model available for this car.');
+        return;
+      }
+      
+      $('#modalCarName').text(car.model);
+      modal.style.display = "block";
+      
+      document.getElementById('loadingIndicatorModal').style.display = 'block';
+      
+      try {
+        // Get model files from IndexedDB
+        const modelData = await getModelFiles(car.modelFileId);
+        
+        if (!modelData || !modelData.files || modelData.files.length === 0) {
+          throw new Error('No model files found in database');
+        }
+        
+        const files = modelData.files;
+        
+        // Find the main GLB or GLTF file
+        const mainModelFile = files.find(f => 
+          f.name.endsWith('.glb') || f.name.endsWith('.gltf')
+        );
+        
+        if (!mainModelFile) {
+          throw new Error('No GLB or GLTF file found in model files');
+        }
+        
+        // Create a map of filenames to file data
+        const fileMap = new Map();
+        files.forEach(file => {
+          const fileName = file.name.split('/').pop(); // Get just the filename
+          fileMap.set(fileName, file.data);
+        });
+        
+        // Create a blob URL for the main model file
+        const base64Data = mainModelFile.data.split(',')[1];
+        const byteCharacters = atob(base64Data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: mainModelFile.name.endsWith('.glb') ? 'model/gltf-binary' : 'model/gltf+json' });
+        const modelUrl = URL.createObjectURL(blob);
+        
+        // Initialize Three.js if not already done
+        if (!scene) {
+          initThreeJS();
+        }
+        
+        // Remove previous model
+        if (carModel) {
+          scene.remove(carModel);
+        }
+        
+        const loader = new THREE.GLTFLoader();
+        
+        // Override the loader's resource fetching to use our file map
+        loader.manager.setURLModifier(function(url) {
+          // Extract filename from URL (remove query params and path)
+          const fileName = url.split('/').pop().split('?')[0];
+          
+          // Check if we have this file in our map
+          if (fileMap.has(fileName)) {
+            const fileData = fileMap.get(fileName);
+            const base64Data = fileData.split(',')[1];
+            const byteCharacters = atob(base64Data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray]);
+            return URL.createObjectURL(blob);
+          }
+          
+          return url;
+        });
+        
+        loader.load(
+          modelUrl,
+          function(gltf) {
+            carModel = gltf.scene;
+            
+            // Enable shadows and apply materials
+            carModel.traverse(function(node) {
+              if (node.isMesh) {
+                node.castShadow = true;
+                node.receiveShadow = true;
+                
+                // Enhance material properties for better visibility
+                if (node.material) {
+                  if (Array.isArray(node.material)) {
+                    node.material.forEach(mat => {
+                      if (mat) {
+                        mat.roughness = Math.max(0.2, mat.roughness || 0.5);
+                        mat.metalness = Math.min(0.8, mat.metalness || 0.3);
+                        mat.emissiveIntensity = mat.emissiveIntensity || 0;
+                      }
+                    });
+                  } else {
+                    node.material.roughness = Math.max(0.2, node.material.roughness || 0.5);
+                    node.material.metalness = Math.min(0.8, node.material.metalness || 0.3);
+                    node.material.emissiveIntensity = node.material.emissiveIntensity || 0;
+                  }
+                }
+              }
+            });
+            
+            scene.add(carModel);
+            
+            // Center and scale the model
+            const box = new THREE.Box3().setFromObject(carModel);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            
+            // Position the model at the center
+            carModel.position.x = -center.x;
+            carModel.position.y = -center.y;
+            carModel.position.z = -center.z;
+            
+            // Calculate optimal scale and camera distance
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const targetSize = 3.0; // Desired size in view
+            
+            // Scale the model if it's too large or too small
+            if (maxDim > targetSize * 1.5 || maxDim < targetSize * 0.5) {
+              const scale = targetSize / maxDim;
+              carModel.scale.set(scale, scale, scale);
+              
+              // Recalculate box after scaling
+              const scaledBox = new THREE.Box3().setFromObject(carModel);
+              const scaledCenter = scaledBox.getCenter(new THREE.Vector3());
+              carModel.position.x = -scaledCenter.x;
+              carModel.position.y = -scaledCenter.y;
+              carModel.position.z = -scaledCenter.z;
+            }
+            
+            // Adjust camera based on model size (after potential scaling)
+            const finalBox = new THREE.Box3().setFromObject(carModel);
+            const finalSize = finalBox.getSize(new THREE.Vector3());
+            const finalMaxDim = Math.max(finalSize.x, finalSize.y, finalSize.z);
+            
+            // Calculate camera distance based on model size and field of view
+            const fov = camera.fov * (Math.PI / 180);
+            let cameraDistance = (finalMaxDim / 2) / Math.tan(fov / 2);
+            cameraDistance = cameraDistance * 1.5; // Add some padding
+            
+            // Clamp to reasonable range
+            cameraDistance = Math.max(cameraDistance, 2);
+            cameraDistance = Math.min(cameraDistance, 15);
+            
+            // Position camera at an angle
+            camera.position.set(cameraDistance * 0.7, cameraDistance * 0.3, cameraDistance);
+            controls.target.set(0, finalSize.y * 0.3, 0); // Look at center of model
+            controls.update();
+            
+            document.getElementById('loadingIndicatorModal').style.display = 'none';
+            
+            // Clean up blob URLs
+            URL.revokeObjectURL(modelUrl);
+            
+            // Update viewer stats
+            updateViewerStats(car.model, finalSize);
+            
+            // Update modal with car info
+            $('#engineSpecModal').text(car.engine || 'Custom Model');
+            $('#horsepowerSpecModal').text(car.horsepower || 'N/A');
+            $('#transmissionSpecModal').text(car.transmission || 'N/A');
+            $('#fuelSpecModal').text(car.fuel || 'N/A');
+            $('#seatingSpecModal').text(car.seating || 'N/A');
+            
+            if (car.features) {
+              const featuresList = car.features.split(',').map(f => f.trim());
+              $('#featuresListModal').empty();
+              featuresList.forEach(feature => {
+                $('#featuresListModal').append(`<li>${feature}</li>`);
+              });
+            }
+          },
+          function(xhr) {
+            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+          },
+          function(error) {
+            console.error('Error loading model:', error);
+            document.getElementById('loadingIndicatorModal').style.display = 'none';
+            alert('Error loading 3D model. The file may be corrupted or in an unsupported format.\n\nTechnical details: ' + error.message);
+          }
+        );
+      } catch (error) {
+        console.error('Error loading model from database:', error);
+        document.getElementById('loadingIndicatorModal').style.display = 'none';
+        alert('Error loading 3D model: ' + error.message);
+      }
+    }
+    
+    // Load GLB model
+    function loadModel(modelKey) {
+      const modelData = carModels[modelKey];
+      
+      if (!modelData) {
+        console.error('Model data not found for:', modelKey);
+        return;
+      }
+      
+      // Show loading indicator
+      document.getElementById('loadingIndicatorModal').style.display = 'block';
+      
+      // Update car info
+      $('#engineSpecModal').text(modelData.engine);
+      $('#horsepowerSpecModal').text(modelData.horsepower);
+      $('#transmissionSpecModal').text(modelData.transmission);
+      $('#fuelSpecModal').text(modelData.fuel);
+      $('#seatingSpecModal').text(modelData.seating);
+      
+      // Update features list
+      $('#featuresListModal').empty();
+      modelData.features.forEach(feature => {
+        $('#featuresListModal').append(`<li>${feature}</li>`);
+      });
+      
+      // Remove previous model if exists
+      if (carModel) {
+        scene.remove(carModel);
+      }
+      
+      // Load new model
+      const loader = new THREE.GLTFLoader();
+      loader.load(
+        modelData.glbPath,
+        function(gltf) {
+          carModel = gltf.scene;
+          
+          // Apply same lighting enhancements
+          carModel.traverse(function(node) {
+            if (node.isMesh) {
+              node.castShadow = true;
+              node.receiveShadow = true;
+            }
+          });
+          
+          scene.add(carModel);
+          
+          // Center the model
+          const box = new THREE.Box3().setFromObject(carModel);
+          const center = box.getCenter(new THREE.Vector3());
+          const size = box.getSize(new THREE.Vector3());
+          
+          // Position the model at the center
+          carModel.position.x = -center.x;
+          carModel.position.y = -center.y;
+          carModel.position.z = -center.z;
+          
+          // Adjust camera based on model size
+          const maxDim = Math.max(size.x, size.y, size.z);
+          const fov = camera.fov * (Math.PI / 180);
+          let cameraZ = Math.abs(maxDim / Math.sin(fov / 2));
+          cameraZ = Math.max(cameraZ, 3);
+          cameraZ = Math.min(cameraZ, 10);
+          
+          camera.position.set(0, size.y * 0.5, cameraZ);
+          controls.target.set(0, 0, 0);
+          controls.update();
+          
+          // Hide loading indicator
+          document.getElementById('loadingIndicatorModal').style.display = 'none';
+          
+          // Update viewer stats
+          updateViewerStats(modelData.name, size);
+        },
+        function(xhr) {
+          // Progress callback
+          console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+        },
+        function(error) {
+          // Error callback
+          console.error('Error loading model:', error);
+          document.getElementById('loadingIndicatorModal').style.display = 'none';
+          alert('Error loading 3D model. Please check the file path.');
+        }
+      );
+    }
+    
+    // Update viewer statistics
+    function updateViewerStats(modelName, size) {
+      const statsElement = document.getElementById('viewerStatsModal');
+      statsElement.innerHTML = `
+        ${modelName}<br>
+        Size: ${size.x.toFixed(2)} × ${size.y.toFixed(2)} × ${size.z.toFixed(2)}
+      `;
+    }
+    
+    // Handle window resize
+    function onWindowResize() {
+      const canvas = document.getElementById('carViewerModal');
+      camera.aspect = canvas.clientWidth / canvas.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    }
+    
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    
+    // Modal viewer controls
+    $('#rotateLeftModal').click(function() {
+      if (carModel) {
+        carModel.rotation.y += 0.1;
+      }
+    });
+    
+    $('#rotateRightModal').click(function() {
+      if (carModel) {
+        carModel.rotation.y -= 0.1;
+      }
+    });
+    
+    $('#zoomInModal').click(function() {
+      camera.position.multiplyScalar(0.9);
+      controls.update();
+    });
+    
+    $('#zoomOutModal').click(function() {
+      camera.position.multiplyScalar(1.1);
+      controls.update();
+    });
+    
+    $('#resetViewModal').click(function() {
+      isInteriorView = false;
+      
+      if (carModel) {
+        // Reset model rotation
+        carModel.rotation.y = 0;
+        
+        // Re-center camera based on current model size
+        const box = new THREE.Box3().setFromObject(carModel);
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const fov = camera.fov * (Math.PI / 180);
+        let cameraDistance = (maxDim / 2) / Math.tan(fov / 2);
+        cameraDistance = cameraDistance * 1.5;
+        cameraDistance = Math.max(cameraDistance, 2);
+        cameraDistance = Math.min(cameraDistance, 15);
+        
+        camera.position.set(cameraDistance * 0.7, cameraDistance * 0.3, cameraDistance);
+        controls.target.set(0, size.y * 0.3, 0);
+      } else {
+        camera.position.set(5, 2, 5);
+        controls.target.set(0, 0, 0);
+      }
+      
+      controls.minDistance = 2;
+      controls.maxDistance = 20;
+      controls.update();
+    });
+
+    // ========== INVENTORY MANAGEMENT - CONNECTED TO ADMIN DASHBOARD ==========
+    
+    // Default static cars (matching admin dashboard) with correct detail pages
+    const defaultInventory = [
+      // Toyota
+      { id: 'toyota-vios', brand: 'toyota', model: 'Toyota Vios', variant: '1.5 G M/T', price: '979,000', year: '2023', description: 'Toyota Vios', features: 'Apple CarPlay, Android Auto, Blind Spot Monitor, Lane Departure Alert', image: 'img/vios1.png', images: ['img/vios1.png'], soldOut: false, isStatic: true, transmission: 'automatic' },
+      { id: 'toyota-wigo', brand: 'toyota', model: 'WIGO', variant: '1.0 G M/T', price: '700,000', year: '2023', description: 'Toyota Wigo', features: 'Touchscreen Display, Rear Camera, Keyless Entry', image: 'img/wigo1.png', images: ['img/wigo1.png'], soldOut: false, isStatic: true, transmission: 'manual' },
+      { id: 'toyota-yaris', brand: 'toyota', model: 'Yaris cross', variant: '1.5 G CVT', price: '1,200,000', year: '2023', description: 'Toyota Yaris Cross', features: 'LED Headlights, Automatic Climate Control, Safety Sense', image: 'img/yaris4.png', images: ['img/yaris4.png'], soldOut: false, isStatic: true, transmission: 'automatic' },
+      { id: 'toyota-raize', brand: 'toyota', model: 'Raize', variant: '1.2 G CVT', price: '1,050,000', year: '2023', description: 'Toyota Raize', features: 'Panoramic View Monitor, Wireless Charger, Smart Entry', image: 'img/raize1.png', images: ['img/raize1.png'], soldOut: false, isStatic: true, transmission: 'automatic' },
+      // Suzuki
+      { id: 'suzuki-fronx', brand: 'suzuki', model: 'Fronx', variant: '1.2 GLX M/T', price: '900,000', year: '2023', description: 'Suzuki Fronx', features: 'Touchscreen Display, Rear Parking Sensors, Automatic Climate Control', image: 'img/Fronx.webp', images: ['img/Fronx.webp'], soldOut: false, isStatic: true, transmission: 'manual' },
+      { id: 'suzuki-swift', brand: 'suzuki', model: 'Swift', variant: '1.2 GL M/T', price: '850,000', year: '2023', description: 'Suzuki Swift', features: 'Keyless Entry, Push Start, Cruise Control', image: 'img/swift.webp', images: ['img/swift.webp'], soldOut: false, isStatic: true, transmission: 'manual' },
+      { id: 'suzuki-ertiga', brand: 'suzuki', model: 'Ertiga', variant: '1.5 GLX M/T', price: '950,000', year: '2023', description: 'Suzuki Ertiga', features: '7-Seater, Rear AC Vents, Touchscreen Infotainment', image: 'img/Ertiga.webp', images: ['img/Ertiga.webp'], soldOut: false, isStatic: true, transmission: 'manual' },
+      { id: 'suzuki-jimny', brand: 'suzuki', model: 'Jimny', variant: '1.5 GL M/T', price: '1,300,000', year: '2023', description: 'Suzuki Jimny', features: '4x4, Off-road Capability, LED DRLs', image: 'img/Jimny.webp', images: ['img/Jimny.webp'], soldOut: false, isStatic: true, transmission: 'manual' },
+      // Mitsubishi
+      { id: 'mitsubishi-mirage', brand: 'mitsubishi', model: 'Mirage', variant: '1.2 GLX M/T', price: '750,000', year: '2023', description: 'Mitsubishi Mirage', features: 'Compact Design, Fuel Efficient, Easy Parking', image: 'img/mirage.jpg', images: ['img/mirage.jpg'], soldOut: false, isStatic: true, transmission: 'manual' },
+      { id: 'mitsubishi-xpander', brand: 'mitsubishi', model: 'Xpander', variant: '1.5 GLS M/T', price: '1,150,000', year: '2023', description: 'Mitsubishi Xpander', features: '7-Seater, Dynamic Shield Design, Touchscreen Audio', image: 'img/expander.webp', images: ['img/expander.webp'], soldOut: false, isStatic: true, transmission: 'automatic' },
+      { id: 'mitsubishi-xforce', brand: 'mitsubishi', model: 'Xforce', variant: '1.5 GLS M/T', price: '1,100,000', year: '2023', description: 'Mitsubishi Xforce', features: 'SUV Styling, Spacious Interior, Modern Features', image: 'img/xforce.png', images: ['img/xforce.png'], soldOut: false, isStatic: true, transmission: 'automatic' },
+      { id: 'mitsubishi-triton', brand: 'mitsubishi', model: 'Triton', variant: '2.4 GLS M/T', price: '1,400,000', year: '2023', description: 'Mitsubishi Triton', features: 'Pickup Truck, Powerful Engine, Off-road Capable', image: 'img/triton.webp', images: ['img/triton.webp'], soldOut: false, isStatic: true, transmission: 'manual' }
+    ];
+
+    // Load inventory from localStorage (syncs with admin dashboard)
+    function loadInventory() {
+      const stored = localStorage.getItem('carInventory');
+      if (stored) {
+        return JSON.parse(stored);
+      } else {
+        // Initialize with default inventory
+        localStorage.setItem('carInventory', JSON.stringify(defaultInventory));
+        return defaultInventory;
+      }
+    }
+
+    // Navigate images in car items
+    window.navigateImage = function(button, direction, carId) {
+      const carItem = $(button).closest('.car-item');
+      const img = carItem.find('.car-main-image')[0];
+      const images = JSON.parse(img.getAttribute('data-images'));
+      let currentIndex = parseInt(img.getAttribute('data-current-index'));
+      
+      currentIndex = (currentIndex + direction + images.length) % images.length;
+      img.src = images[currentIndex];
+      img.setAttribute('data-current-index', currentIndex);
+    };
+
+    // Filter state
+    let currentFilters = {
+      brand: '',
+      minPrice: '',
+      maxPrice: '',
+      transmission: ''
+    };
+
+    // Set transmission filter
+    window.setTransmission = function(type) {
+      const options = document.querySelectorAll('.transmission-option');
+      options.forEach(opt => opt.classList.remove('active'));
+      
+      if (currentFilters.transmission === type) {
+        // Toggle off if same
+        currentFilters.transmission = '';
+      } else {
+        // Set new filter
+        event.currentTarget.classList.add('active');
+        currentFilters.transmission = type;
+      }
+      
+      updateActiveFilters();
+      applyFilters();
+    };
+
+    // Clear brand filter
+    window.clearBrandFilter = function() {
+      document.getElementById('brandSearch').value = '';
+      currentFilters.brand = '';
+      updateActiveFilters();
+      applyFilters();
+    };
+
+    // Clear price filter
+    window.clearPriceFilter = function() {
+      document.getElementById('minPrice').value = '';
+      document.getElementById('maxPrice').value = '';
+      currentFilters.minPrice = '';
+      currentFilters.maxPrice = '';
+      updateActiveFilters();
+      applyFilters();
+    };
+
+    // Clear transmission filter
+    window.clearTransmissionFilter = function() {
+      document.querySelectorAll('.transmission-option').forEach(opt => opt.classList.remove('active'));
+      currentFilters.transmission = '';
+      updateActiveFilters();
+      applyFilters();
+    };
+
+    // Clear all filters
+    window.clearAllFilters = function() {
+      document.getElementById('brandSearch').value = '';
+      document.getElementById('minPrice').value = '';
+      document.getElementById('maxPrice').value = '';
+      document.querySelectorAll('.transmission-option').forEach(opt => opt.classList.remove('active'));
+      
+      currentFilters = {
+        brand: '',
+        minPrice: '',
+        maxPrice: '',
+        transmission: ''
+      };
+      
+      updateActiveFilters();
+      applyFilters();
+    };
+
+    // Update active filters display
+    function updateActiveFilters() {
+      const activeFiltersDiv = document.getElementById('activeFilters');
+      const brandTag = document.getElementById('brandFilterTag');
+      const priceTag = document.getElementById('priceFilterTag');
+      const transmissionTag = document.getElementById('transmissionFilterTag');
+      
+      let hasActiveFilters = false;
+      
+      // Brand filter
+      if (currentFilters.brand) {
+        brandTag.style.display = 'inline-flex';
+        document.getElementById('brandFilterValue').textContent = currentFilters.brand;
+        hasActiveFilters = true;
+      } else {
+        brandTag.style.display = 'none';
+      }
+      
+      // Price filter
+      if (currentFilters.minPrice || currentFilters.maxPrice) {
+        priceTag.style.display = 'inline-flex';
+        let priceText = '';
+        if (currentFilters.minPrice && currentFilters.maxPrice) {
+          priceText = `₱${currentFilters.minPrice} - ₱${currentFilters.maxPrice}`;
+        } else if (currentFilters.minPrice) {
+          priceText = `₱${currentFilters.minPrice}+`;
+        } else if (currentFilters.maxPrice) {
+          priceText = `Up to ₱${currentFilters.maxPrice}`;
+        }
+        document.getElementById('priceFilterValue').textContent = priceText;
+        hasActiveFilters = true;
+      } else {
+        priceTag.style.display = 'none';
+      }
+      
+      // Transmission filter
+      if (currentFilters.transmission) {
+        transmissionTag.style.display = 'inline-flex';
+        document.getElementById('transmissionFilterValue').textContent = 
+          currentFilters.transmission.charAt(0).toUpperCase() + currentFilters.transmission.slice(1);
+        hasActiveFilters = true;
+      } else {
+        transmissionTag.style.display = 'none';
+      }
+      
+      // Show/hide active filters container
+      activeFiltersDiv.style.display = hasActiveFilters ? 'flex' : 'none';
+    }
+
+    // Apply all filters
+    function applyFilters() {
+      const inventory = loadInventory();
+      const gallery = document.getElementById('carsGallery');
+      
+      // Filter cars
+      const filteredCars = inventory.filter(car => {
+        // Brand filter
+        if (currentFilters.brand && !car.brand.toLowerCase().includes(currentFilters.brand.toLowerCase())) {
+          return false;
+        }
+        
+        // Price filter
+        const carPrice = parseFloat(car.price.replace(/,/g, ''));
+        if (currentFilters.minPrice && carPrice < parseFloat(currentFilters.minPrice)) {
+          return false;
+        }
+        if (currentFilters.maxPrice && carPrice > parseFloat(currentFilters.maxPrice)) {
+          return false;
+        }
+        
+        // Transmission filter
+        if (currentFilters.transmission && car.transmission !== currentFilters.transmission) {
+          return false;
+        }
+        
+        return true;
+      });
+
+      // Re-render with filtered cars
+      renderFilteredCars(filteredCars);
+      
+      // Show/hide no results
+      if (filteredCars.length === 0) {
+        document.getElementById('noResults').style.display = 'block';
+      } else {
+        document.getElementById('noResults').style.display = 'none';
+      }
+    }
+
+    // Render filtered cars
+    function renderFilteredCars(filteredCars) {
+      const gallery = document.getElementById('carsGallery');
+      gallery.innerHTML = '';
+
+      // Group by brand
+      const brands = {};
+      filteredCars.forEach(car => {
+        if (!brands[car.brand]) brands[car.brand] = [];
+        brands[car.brand].push(car);
+      });
+
+      // Render each brand section
+      for (let brand in brands) {
+        const section = document.createElement('div');
+        section.id = brand + '-section';
+        section.className = 'tm-category-section car-section';
+        
+        // Brand title
+        const title = document.createElement('h3');
+        title.className = 'tm-gallery-title';
+        title.textContent = brand.toUpperCase();
+        section.appendChild(title);
+
+        // Add cars
+        brands[brand].forEach(car => {
+          const carDiv = document.createElement('div');
+          carDiv.className = 'tm-item-container car-item' + (car.soldOut ? ' sold-out' : '');
+          carDiv.setAttribute('data-car-id', car.id);
+          carDiv.setAttribute('data-brand', brand);
+          
+          // Format price display
+          const priceDisplay = car.price ? `₱${car.price}` : 'Price not available';
+          
+          // Get images for this car
+          const images = car.images || [car.image];
+          const imageCount = images.length;
+          
+          // Create image container with navigation
+          const imageContainer = document.createElement('div');
+          imageContainer.className = 'car-image-container';
+          
+          const img = document.createElement('img');
+          img.src = images[0];
+          img.alt = car.model;
+          img.width = 200;
+          img.height = 150;
+          img.className = 'car-main-image';
+          img.setAttribute('data-current-index', '0');
+          img.setAttribute('data-images', JSON.stringify(images));
+          imageContainer.appendChild(img);
+          
+          // Add image count badge
+          if (imageCount > 1) {
+            const countBadge = document.createElement('span');
+            countBadge.className = 'image-count-badge';
+            countBadge.innerHTML = `<i class="fa fa-images"></i> ${imageCount}`;
+            imageContainer.appendChild(countBadge);
+          }
+          
+          // Add 3D model badge if available
+          if (car.modelFileId) {
+            const modelBadge = document.createElement('span');
+            modelBadge.className = 'model-badge';
+            modelBadge.innerHTML = '<i class="fa fa-cube"></i> 3D';
+            imageContainer.appendChild(modelBadge);
+          }
+          
+          // Add image navigation if multiple images
+          if (imageCount > 1 && !car.soldOut) {
+            const navDiv = document.createElement('div');
+            navDiv.className = 'image-nav';
+            navDiv.innerHTML = `
+              <button class="prev-image" onclick="event.preventDefault(); navigateImage(this, -1, '${car.id}')"><i class="fa fa-chevron-left"></i></button>
+              <button class="next-image" onclick="event.preventDefault(); navigateImage(this, 1, '${car.id}')"><i class="fa fa-chevron-right"></i></button>
+            `;
+            imageContainer.appendChild(navDiv);
+          }
+          
+          // Add sold out overlay if needed
+          if (car.soldOut) {
+            const soldOutDiv = document.createElement('div');
+            soldOutDiv.className = 'sold-out-overlay';
+            soldOutDiv.style.position = 'absolute';
+            soldOutDiv.style.top = '0';
+            soldOutDiv.style.left = '0';
+            soldOutDiv.style.width = '100%';
+            soldOutDiv.style.height = '100%';
+            soldOutDiv.style.display = 'flex';
+            soldOutDiv.style.alignItems = 'center';
+            soldOutDiv.style.justifyContent = 'center';
+            soldOutDiv.style.backgroundColor = 'rgba(231, 76, 60, 0.8)';
+            soldOutDiv.style.color = 'white';
+            soldOutDiv.style.fontSize = '24px';
+            soldOutDiv.style.fontWeight = 'bold';
+            soldOutDiv.style.transform = 'rotate(-15deg)';
+            soldOutDiv.style.zIndex = '10';
+            soldOutDiv.textContent = 'SOLD OUT';
+            imageContainer.appendChild(soldOutDiv);
+          }
+          
+          carDiv.appendChild(imageContainer);
+          
+          // Model name
+          const modelP = document.createElement('p');
+          modelP.className = 'tm-item-description';
+          modelP.textContent = car.model;
+          carDiv.appendChild(modelP);
+          
+          // Transmission badge
+          if (car.transmission) {
+            const transSpan = document.createElement('span');
+            transSpan.className = 'transmission-badge';
+            transSpan.style.display = 'inline-block';
+            transSpan.style.padding = '2px 8px';
+            transSpan.style.margin = '5px 0';
+            transSpan.style.backgroundColor = '#f0f0f0';
+            transSpan.style.borderRadius = '12px';
+            transSpan.style.fontSize = '11px';
+            transSpan.style.marginRight = '5px';
+            
+            if (car.transmission === 'automatic') {
+              transSpan.innerHTML = '<i class="fa fa-cog"></i> Automatic';
+            } else if (car.transmission === 'manual') {
+              transSpan.innerHTML = '<i class="fa fa-exchange"></i> Manual';
+            } else if (car.transmission === 'hybrid') {
+              transSpan.innerHTML = '<i class="fa fa-leaf"></i> Hybrid';
+            }
+            
+            carDiv.appendChild(transSpan);
+          }
+          
+          // Price display
+          const priceP = document.createElement('p');
+          priceP.className = 'price-display';
+          priceP.innerHTML = priceDisplay;
+          carDiv.appendChild(priceP);
+          
+          carDiv.appendChild(document.createElement('hr'));
+          
+          // Actions (Details and 3D View)
+          const actionsDiv = document.createElement('div');
+          actionsDiv.className = 'tm-item-actions';
+          
+          // Details link - FIXED: Pass car ID as URL parameter
+          const detailsLink = document.createElement('a');
+          detailsLink.href = `car-details.html?id=${car.id}`;
+          detailsLink.className = 'about-link about-link-2';
+          detailsLink.textContent = 'Details';
+          
+          if (car.soldOut) {
+            detailsLink.style.pointerEvents = 'none';
+            detailsLink.style.opacity = '0.5';
+          }
+          actionsDiv.appendChild(detailsLink);
+          
+          // 3D View button
+          const view3DBtn = document.createElement('button');
+          view3DBtn.className = 'btn-3d';
+          view3DBtn.setAttribute('data-model', brand);
+          view3DBtn.setAttribute('data-name', car.model);
+          view3DBtn.innerHTML = '<i class="fa fa-cube"></i> 3D View';
+          if (car.soldOut) {
+            view3DBtn.disabled = true;
+          }
+          actionsDiv.appendChild(view3DBtn);
+          
+          carDiv.appendChild(actionsDiv);
+          section.appendChild(carDiv);
+        });
+
+        gallery.appendChild(section);
+      }
+    }
+
+    // Render all cars from inventory
+    function renderCars() {
+      const inventory = loadInventory();
+      renderFilteredCars(inventory);
+    }
+
+    // Search functionality with 3 filters
+    function setupSearch() {
+      // Brand search
+      $('#brandSearch').on('input', function() {
+        currentFilters.brand = $(this).val();
+        updateActiveFilters();
+        applyFilters();
+      });
+      
+      // Price range
+      $('#minPrice, #maxPrice').on('input', function() {
+        currentFilters.minPrice = $('#minPrice').val();
+        currentFilters.maxPrice = $('#maxPrice').val();
+        updateActiveFilters();
+        applyFilters();
+      });
+    }
+
+    // Watch for inventory changes from admin dashboard
+    function watchInventory() {
+      let lastInventory = localStorage.getItem('carInventory');
+      setInterval(() => {
+        const current = localStorage.getItem('carInventory');
+        if (current !== lastInventory) {
+          lastInventory = current;
+          renderCars();
+          showNotification('Inventory updated from admin dashboard!', 'success');
+        }
+      }, 1000); // Check every 1 second for instant updates
+    }
+
+    // Also listen for storage events (when admin makes changes in another tab)
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'carInventory') {
+        renderCars();
+        showNotification('Car inventory updated!', 'info');
+      }
+    });
+
+    // Show notification
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = `notification-message ${type}`;
+      
+      let icon = 'fa-check-circle';
+      if (type === 'error') icon = 'fa-exclamation-circle';
+      if (type === 'info') icon = 'fa-info-circle';
+      
+      notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <i class="fa ${icon}" style="font-size: 18px;"></i>
+          <span>${message}</span>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.style.animation = 'slideIn 0.3s ease-out reverse';
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 300);
+        }
+      }, 3000);
+    }
+
+    // Initialize IndexedDB on page load
+    async function initializeDB() {
+      try {
+        await openDB();
+        console.log('IndexedDB initialized');
+      } catch (error) {
+        console.error('Failed to initialize IndexedDB:', error);
+      }
+    }
+
+    // Initialize on page load
+    $(document).ready(function() {
+      initializeDB();
+      renderCars();
+      watchInventory();
+      setupSearch();
+
+      // Focus search box on '/' key press
+      $(document).on('keydown', function(e) {
+        if (e.key === '/' && !$('#brandSearch').is(':focus') && !$('#minPrice').is(':focus') && !$('#maxPrice').is(':focus')) {
+          e.preventDefault();
+          $('#brandSearch').focus();
+        }
+      });
+
+      // Clear search on escape key
+      $('#brandSearch, #minPrice, #maxPrice').on('keydown', function(e) {
+        if (e.key === 'Escape') {
+          $(this).val('');
+          $(this).trigger('input');
+        }
+      });
+    });
+  </script>
+  <!-- Add this script right before the closing </body> tag -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load About Us content from localStorage
+    loadAboutUsContent();
+    
+    // Rest of your existing code...
+});
+
+function loadAboutUsContent() {
+    const aboutUsElement = document.querySelector('.tm-footer-div p.margin-top-15');
+    const savedAboutUs = localStorage.getItem('aboutUsContent');
+    
+    if (aboutUsElement && savedAboutUs) {
+        // Split the content into paragraphs if it contains line breaks
+        const paragraphs = savedAboutUs.split('\n').filter(p => p.trim() !== '');
+        if (paragraphs.length > 0) {
+            aboutUsElement.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+        } else {
+            aboutUsElement.textContent = savedAboutUs;
+        }
+    } else if (aboutUsElement && !savedAboutUs) {
+        // Use default content if nothing is saved
+        aboutUsElement.textContent = 'At CarVision 3D, we transform car brochures into interactive experiences. With 360° 3D models, customers can explore every angle, open doors, and see the details up close. We make car shopping more engaging, immersive, and unforgettable.';
+    }
+}
+
+// Listen for storage events to update About Us content in real-time
+window.addEventListener('storage', function(e) {
+    if (e.key === 'aboutUsContent') {
+        loadAboutUsContent();
+    }
+});
+</script>
+</body>
+</html>

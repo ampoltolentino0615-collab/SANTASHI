@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SANTASHI - Forgot Password</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            padding-right: 5%;
+        }
+        
+        /* Video background styling */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .video-background video {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 400px;
+            z-index: 1;
+        }
+        
+        .auth-card {
+            width: 400px;
+            min-height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-header h2 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .auth-header p {
+            color: #ddd;
+            font-size: 16px;
+        }
+        
+        .back-to-login {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+        
+        .back-to-login:hover {
+            color: #4a6ee0;
+        }
+        
+        .back-to-login i {
+            font-size: 16px;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex: 1;
+        }
+        
+        .step:not(:last-child):before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            z-index: 0;
+        }
+        
+        .step.active:not(:last-child):before {
+            background: #4a6ee0;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 8px;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active .step-number {
+            background: #4a6ee0;
+            color: white;
+        }
+        
+        .step.completed .step-number {
+            background: #51cf66;
+            color: white;
+        }
+        
+        .step-label {
+            color: #fff;
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .step.active .step-label {
+            color: #4a6ee0;
+            font-weight: 500;
+        }
+        
+        .step.completed .step-label {
+            color: #51cf66;
+        }
+        
+        .form-section {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+        }
+        
+        .form-section.active {
+            display: flex;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .form-group input:focus {
+            border-color: #4a6ee0;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(74, 110, 224, 0.2);
+        }
+        
+        .form-group input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .user-type-selector {
+            display: flex;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .user-type-option {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background-color: rgba(245, 245, 245, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #fff;
+        }
+        
+        .user-type-option.active {
+            background-color: #4a6ee0;
+            color: white;
+        }
+        
+        .user-type-option:first-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .auth-button {
+            width: 100%;
+            padding: 14px;
+            background-color: #4a6ee0;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: auto;
+        }
+        
+        .auth-button:hover:not(:disabled) {
+            background-color: #3a5ec8;
+        }
+        
+        .auth-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .auth-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #ddd;
+        }
+        
+        .auth-link a {
+            color: #4a6ee0;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .auth-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #ff6b6b;
+            background-color: rgba(255, 107, 107, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message {
+            color: #51cf66;
+            background-color: rgba(81, 207, 102, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
+        
+        .info-message {
+            color: #4a6ee0;
+            background-color: rgba(74, 110, 224, 0.1);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .info-message i {
+            margin-right: 8px;
+        }
+        
+        .resend-code {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .resend-code a {
+            color: #4a6ee0;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .resend-code a:hover {
+            text-decoration: underline;
+        }
+        
+        .resend-code a.disabled {
+            color: #999;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+        
+        .countdown-timer {
+            color: #ddd;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .password-strength {
+            margin-top: 5px;
+            height: 5px;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+        }
+        
+        .password-strength.weak .password-strength-bar {
+            width: 33%;
+            background-color: #ff6b6b;
+        }
+        
+        .password-strength.medium .password-strength-bar {
+            width: 66%;
+            background-color: #feca57;
+        }
+        
+        .password-strength.strong .password-strength-bar {
+            width: 100%;
+            background-color: #51cf66;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                justify-content: center;
+                padding-right: 0;
+            }
+            
+            .auth-card {
+                width: 350px;
+                padding: 25px;
+            }
+            
+            .step-label {
+                font-size: 10px;
+            }
+        }
+    </style>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop id="bgVideo">
+            <source src="img/bg.mp4" type="video/mp4">
+            Your browser does not support HTML5 video.
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <!-- Forgot Password Container -->
+    <div class="container">
+        <div class="auth-card">
+            <a href="login.html" class="back-to-login">
+                <i class="fas fa-arrow-left"></i> Back to Login
+            </a>
+            
+            <div class="auth-header">
+                <h2>Forgot Password</h2>
+                <p>Reset your password in 3 easy steps</p>
+            </div>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <!-- Step Indicator -->
+            <div class="step-indicator">
+                <div class="step active" id="step1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Verify</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Code</div>
+                </div>
+                <div class="step" id="step3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Reset</div>
+                </div>
+            </div>
+            
+            <!-- User Type Selector (visible in step 1) -->
+            <div class="user-type-selector" id="userTypeSelector">
+                <div class="user-type-option active" data-type="user">User Account</div>
+                <div class="user-type-option" data-type="admin">Admin Account</div>
+            </div>
+            
+            <!-- Step 1: Email/Username Verification -->
+            <div id="step1Form" class="form-section active">
+                <form id="verifyForm">
+                    <div class="form-group">
+                        <label for="emailOrUsername">Email or Username</label>
+                        <input type="text" id="emailOrUsername" placeholder="Enter your email or username" required>
+                    </div>
+                    
+                    <div class="info-message">
+                        <i class="fas fa-info-circle"></i>
+                        We'll send a verification code to your email address
+                    </div>
+                    
+                    <button type="submit" class="auth-button" id="sendCodeBtn">
+                        Send Verification Code
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Step 2: Verification Code -->
+            <div id="step2Form" class="form-section">
+                <form id="verifyCodeForm">
+                    <div class="form-group">
+                        <label for="verificationCode">Verification Code</label>
+                        <input type="text" id="verificationCode" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" required>
+                    </div>
+                    
+                    <div class="info-message" id="codeInfo">
+                        <i class="fas fa-clock"></i>
+                        Code sent to <span id="userEmailDisplay"></span>
+                    </div>
+                    
+                    <div class="resend-code">
+                        <a href="#" id="resendCode">Resend Code</a>
+                        <div class="countdown-timer" id="countdownTimer"></div>
+                    </div>
+                    
+                    <button type="submit" class="auth-button" id="verifyCodeBtn">
+                        Verify Code
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Step 3: Reset Password -->
+            <div id="step3Form" class="form-section">
+                <form id="resetPasswordForm">
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" placeholder="Enter new password" required>
+                        <div class="password-strength" id="resetPasswordStrength">
+                            <div class="password-strength-bar"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmNewPassword">Confirm New Password</label>
+                        <input type="password" id="confirmNewPassword" placeholder="Confirm new password" required>
+                    </div>
+                    
+                    <div class="info-message">
+                        <i class="fas fa-lock"></i>
+                        Password must be at least 8 characters with 1 uppercase, 1 number, and 1 special character
+                    </div>
+                    
+                    <button type="submit" class="auth-button" id="resetPasswordBtn">
+                        Reset Password
+                    </button>
+                </form>
+            </div>
+            
+            <div class="auth-link">
+                Remember your password? <a href="login.html">Login here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize users from localStorage or create default ones
+        function initializeUsers() {
+            // Check if users exist in localStorage
+            let storedUsers = localStorage.getItem('users');
+            
+            if (!storedUsers) {
+                // Create default users if none exist
+                const defaultUsers = {
+                    user: [
+                        { 
+                            id: 'user1', 
+                            username: 'john_doe', 
+                            email: 'john@example.com', 
+                            password: 'Password123!', 
+                            fullName: 'John Doe',
+                            createdAt: new Date().toISOString()
+                        },
+                        { 
+                            id: 'user2', 
+                            username: 'jane_smith', 
+                            email: 'jane@example.com', 
+                            password: 'Password123!', 
+                            fullName: 'Jane Smith',
+                            createdAt: new Date().toISOString()
+                        }
+                    ],
+                    admin: [
+                        { 
+                            id: 'admin1', 
+                            username: 'admin', 
+                            email: 'admin@santashi.com', 
+                            password: 'Admin123!', 
+                            fullName: 'Admin User',
+                            createdAt: new Date().toISOString()
+                        }
+                    ]
+                };
+                
+                localStorage.setItem('users', JSON.stringify(defaultUsers));
+                return defaultUsers;
+            }
+            
+            return JSON.parse(storedUsers);
+        }
+
+        // Load users
+        let users = initializeUsers();
+
+        // Store reset session data
+        let resetSession = {
+            userType: 'user',
+            email: '',
+            username: '',
+            userId: '',
+            verificationCode: '',
+            codeGeneratedTime: null
+        };
+
+        // DOM Elements
+        const userTypeOptions = document.querySelectorAll('.user-type-option');
+        const userTypeSelector = document.getElementById('userTypeSelector');
+        const step1Form = document.getElementById('step1Form');
+        const step2Form = document.getElementById('step2Form');
+        const step3Form = document.getElementById('step3Form');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const userEmailDisplay = document.getElementById('userEmailDisplay');
+        const countdownTimer = document.getElementById('countdownTimer');
+        const resendLink = document.getElementById('resendCode');
+
+        let countdownInterval;
+        let resendCooldown = 60; // 60 seconds cooldown
+
+        // Handle user type selection
+        userTypeOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                userTypeOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                resetSession.userType = this.dataset.type;
+            });
+        });
+
+        // Generate random 6-digit code
+        function generateVerificationCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // Send verification code (simulated)
+        function sendVerificationCode(email) {
+            const code = generateVerificationCode();
+            resetSession.verificationCode = code;
+            resetSession.codeGeneratedTime = new Date().getTime();
+            
+            // In real app, this would send an email
+            console.log(`Verification code for ${email}: ${code}`);
+            
+            // Store in session storage for demo
+            sessionStorage.setItem('resetCode', code);
+            sessionStorage.setItem('codeTime', resetSession.codeGeneratedTime);
+            sessionStorage.setItem('resetEmail', email);
+            sessionStorage.setItem('resetUserType', resetSession.userType);
+            
+            // Show code in alert for demo purposes (remove in production)
+            alert(`For demo purposes, your verification code is: ${code}`);
+            
+            return code;
+        }
+
+        // Start countdown for resend
+        function startResendCooldown() {
+            let timeLeft = resendCooldown;
+            resendLink.classList.add('disabled');
+            resendLink.style.pointerEvents = 'none';
+            
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+                countdownTimer.textContent = `Resend available in ${timeLeft}s`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownTimer.textContent = '';
+                    resendLink.classList.remove('disabled');
+                    resendLink.style.pointerEvents = 'auto';
+                }
+            }, 1000);
+        }
+
+        // Show message function
+        function showMessage(message, type) {
+            if (type === 'error') {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            } else {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+            }
+            
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Update step indicator
+        function updateStep(step) {
+            step1.classList.remove('active', 'completed');
+            step2.classList.remove('active', 'completed');
+            step3.classList.remove('active', 'completed');
+            
+            if (step === 1) {
+                step1.classList.add('active');
+                userTypeSelector.style.display = 'flex';
+            } else if (step === 2) {
+                step1.classList.add('completed');
+                step2.classList.add('active');
+                userTypeSelector.style.display = 'none';
+            } else if (step === 3) {
+                step1.classList.add('completed');
+                step2.classList.add('completed');
+                step3.classList.add('active');
+                userTypeSelector.style.display = 'none';
+            }
+            
+            // Show/hide forms
+            step1Form.classList.remove('active');
+            step2Form.classList.remove('active');
+            step3Form.classList.remove('active');
+            
+            if (step === 1) step1Form.classList.add('active');
+            else if (step === 2) step2Form.classList.add('active');
+            else if (step === 3) step3Form.classList.add('active');
+        }
+
+        // Password strength checker
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            return strength;
+        }
+
+        // Password strength indicator
+        const newPasswordInput = document.getElementById('newPassword');
+        const resetPasswordStrength = document.getElementById('resetPasswordStrength');
+        
+        if (newPasswordInput) {
+            newPasswordInput.addEventListener('input', function() {
+                const password = this.value;
+                const strength = checkPasswordStrength(password);
+                
+                resetPasswordStrength.className = 'password-strength';
+                if (password.length > 0) {
+                    if (strength < 2) {
+                        resetPasswordStrength.classList.add('weak');
+                    } else if (strength < 4) {
+                        resetPasswordStrength.classList.add('medium');
+                    } else {
+                        resetPasswordStrength.classList.add('strong');
+                    }
+                }
+            });
+        }
+
+        // Step 1: Send verification code
+        document.getElementById('verifyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const emailOrUsername = document.getElementById('emailOrUsername').value;
+            const userType = resetSession.userType;
+            
+            // Reload users from localStorage to get latest data
+            users = JSON.parse(localStorage.getItem('users')) || initializeUsers();
+            
+            // Find user in the database
+            const userList = users[userType] || [];
+            const user = userList.find(u => 
+                u.email.toLowerCase() === emailOrUsername.toLowerCase() || 
+                u.username.toLowerCase() === emailOrUsername.toLowerCase()
+            );
+            
+            if (!user) {
+                showMessage('No account found with this email or username', 'error');
+                return;
+            }
+            
+            // Send verification code
+            const code = sendVerificationCode(user.email);
+            
+            // Update session
+            resetSession.email = user.email;
+            resetSession.username = user.username;
+            resetSession.userId = user.id;
+            
+            // Update UI
+            userEmailDisplay.textContent = user.email;
+            updateStep(2);
+            startResendCooldown();
+            
+            showMessage(`Verification code sent to ${user.email}`, 'success');
+        });
+
+        // Step 2: Verify code
+        document.getElementById('verifyCodeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const enteredCode = document.getElementById('verificationCode').value;
+            const storedCode = sessionStorage.getItem('resetCode');
+            const codeTime = parseInt(sessionStorage.getItem('codeTime'));
+            const currentTime = new Date().getTime();
+            
+            // Check if code is expired (10 minutes)
+            if (currentTime - codeTime > 600000) {
+                showMessage('Verification code has expired. Please request a new one.', 'error');
+                return;
+            }
+            
+            // Verify code
+            if (enteredCode !== storedCode && enteredCode !== resetSession.verificationCode) {
+                showMessage('Invalid verification code', 'error');
+                return;
+            }
+            
+            // Clear sensitive data
+            sessionStorage.removeItem('resetCode');
+            
+            // Move to step 3
+            updateStep(3);
+            showMessage('Code verified successfully! Please set your new password.', 'success');
+        });
+
+        // Resend code
+        document.getElementById('resendCode').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (this.classList.contains('disabled')) {
+                return;
+            }
+            
+            // Send new code
+            const code = sendVerificationCode(resetSession.email);
+            
+            // Restart cooldown
+            startResendCooldown();
+            
+            showMessage('New verification code sent!', 'success');
+        });
+
+        // Step 3: Reset password
+        document.getElementById('resetPasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmNewPassword').value;
+            
+            // Validate password
+            if (newPassword !== confirmPassword) {
+                showMessage('Passwords do not match', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 8) {
+                showMessage('Password must be at least 8 characters long', 'error');
+                return;
+            }
+            
+            const strength = checkPasswordStrength(newPassword);
+            if (strength < 3) {
+                showMessage('Please choose a stronger password (use uppercase, numbers, and special characters)', 'error');
+                return;
+            }
+            
+            // Reload users from localStorage
+            users = JSON.parse(localStorage.getItem('users')) || initializeUsers();
+            
+            // Find and update user password
+            const userList = users[resetSession.userType] || [];
+            const userIndex = userList.findIndex(u => u.email === resetSession.email);
+            
+            if (userIndex !== -1) {
+                // Update password
+                userList[userIndex].password = newPassword;
+                userList[userIndex].lastPasswordReset = new Date().toISOString();
+                
+                // Save back to localStorage
+                users[resetSession.userType] = userList;
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Also update the login credentials in localStorage for compatibility
+                if (resetSession.userType === 'user') {
+                    localStorage.setItem('isLoggedIn', 'false');
+                }
+                
+                // Clear reset session
+                resetSession = {
+                    userType: 'user',
+                    email: '',
+                    username: '',
+                    userId: '',
+                    verificationCode: '',
+                    codeGeneratedTime: null
+                };
+                
+                // Clear session storage
+                sessionStorage.removeItem('resetCode');
+                sessionStorage.removeItem('codeTime');
+                sessionStorage.removeItem('resetEmail');
+                sessionStorage.removeItem('resetUserType');
+                
+                // Show success and redirect to login
+                showMessage('Password reset successful! Redirecting to login...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+            } else {
+                showMessage('Error updating password. Please try again.', 'error');
+            }
+        });
+
+        // Auto-redirect to login if accessed directly
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize users
+            users = initializeUsers();
+            
+            // Check if user came from login page
+            const referrer = document.referrer;
+            if (!referrer.includes('login.html') && !referrer.includes('index.html')) {
+                console.log('Direct access to forgot password page');
+            }
+            
+            // Clear any existing reset sessions
+            sessionStorage.removeItem('resetCode');
+            sessionStorage.removeItem('codeTime');
+            sessionStorage.removeItem('resetEmail');
+            sessionStorage.removeItem('resetUserType');
+        });
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+        });
+    </script>
+</body>
+</html>

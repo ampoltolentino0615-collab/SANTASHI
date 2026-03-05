@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SANTASHI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            padding-right: 5%;
+        }
+        
+        /* Video background styling */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .video-background video {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+        }
+        
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 400px;
+            z-index: 1;
+        }
+        
+        .auth-card {
+            width: 400px;
+            min-height: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-header h2 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .auth-header p {
+            color: #ddd;
+            font-size: 16px;
+        }
+        
+        .auth-toggle {
+            display: flex;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .auth-option {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background-color: rgba(245, 245, 245, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #fff;
+        }
+        
+        .auth-option.active {
+            background-color: #4a6ee0;
+            color: white;
+        }
+        
+        .auth-option:first-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .user-type-selector {
+            display: flex;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .user-type-option {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background-color: rgba(245, 245, 245, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #fff;
+        }
+        
+        .user-type-option.active {
+            background-color: #4a6ee0;
+            color: white;
+        }
+        
+        .user-type-option:first-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .form-section {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+        }
+        
+        .form-section.active {
+            display: flex;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .form-group input:focus {
+            border-color: #032183;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(74, 110, 224, 0.2);
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .remember-me {
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        
+        .remember-me input {
+            margin-right: 8px;
+        }
+        
+        .forgot-password {
+            color: #4a6ee0;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        
+        .auth-button {
+            width: 100%;
+            padding: 14px;
+            background-color: #4a6ee0;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: auto;
+        }
+        
+        .auth-button:hover {
+            background-color: #3a5ec8;
+        }
+        
+        .guest-button {
+            width: 100%;
+            padding: 14px;
+            background-color: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+        
+        .guest-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .auth-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #ddd;
+        }
+        
+        .auth-link a {
+            color: #4a6ee0;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .auth-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #ff6b6b;
+            background-color: rgba(255, 107, 107, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message {
+            color: #51cf66;
+            background-color: rgba(81, 207, 102, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
+        
+        .password-strength {
+            margin-top: 5px;
+            height: 5px;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+        }
+        
+        .password-strength.weak .password-strength-bar {
+            width: 33%;
+            background-color: #ff6b6b;
+        }
+        
+        .password-strength.medium .password-strength-bar {
+            width: 66%;
+            background-color: #feca57;
+        }
+        
+        .password-strength.strong .password-strength-bar {
+            width: 100%;
+            background-color: #51cf66;
+        }
+
+        /* DPA Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .terms-modal {
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .modal-header h2 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            max-height: 60vh;
+        }
+        
+        .modal-section {
+            margin-bottom: 20px;
+        }
+        
+        .modal-section h3 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .modal-section p, .modal-section ul {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        
+        .modal-section ul {
+            padding-left: 20px;
+        }
+        
+        .modal-section li {
+            margin-bottom: 5px;
+        }
+        
+        .legal-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.85em;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            margin-top: 3px;
+        }
+        
+        .checkbox-group label {
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-btn-primary {
+            background: #1e3c72;
+            color: white;
+        }
+        
+        .modal-btn-primary:hover:not(:disabled) {
+            background: #2a5298;
+        }
+        
+        .modal-btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .modal-btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .modal-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                justify-content: center;
+                padding-right: 0;
+            }
+            
+            .auth-card {
+                width: 350px;
+                padding: 25px;
+            }
+            
+            .remember-forgot {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .forgot-password {
+                margin-top: 10px;
+            }
+            
+            .terms-modal {
+                width: 95%;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop id="bgVideo">
+            <source src="img/bg.mp4" type="video/mp4">
+            Your browser does not support HTML5 video.
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+    
+    <!-- DPA Modal -->
+    <div class="modal-overlay" id="termsModal">
+        <div class="terms-modal">
+            <div class="modal-header">
+                <button class="close-modal" onclick="hideTermsModal()">×</button>
+                <h2>Data Processing Addendum (DPA)</h2>
+                <p>User Access Terms and Agreement</p>
+            </div>
+            
+            <div class="modal-content">
+                <div class="modal-section">
+                    <h3>1. Definitions & Interpretation</h3>
+                    <p><strong>1.1.</strong> "Data Protection Laws" means all applicable data protection and privacy legislation, regulations, and guidance including but not limited to the GDPR, CCPA/CPRA, and other relevant laws.</p>
+                    <p><strong>1.2.</strong> "Personal Data" means any information relating to an identified or identifiable natural person.</p>
+                    <p><strong>1.3.</strong> "Data Controller" refers to SANTASHI who determines the purposes and means of processing personal data.</p>
+                    <p><strong>1.4.</strong> "Data Processor" refers to any entity that processes personal data on behalf of the Data Controller.</p>
+                </div>
+
+                <div class="modal-section">
+                    <h3>2. Scope and Purpose</h3>
+                    <p>This DPA governs the processing of Personal Data by the Data Controller when users access and use our website services. The purpose is to ensure compliance with Data Protection Laws and protect user privacy rights.</p>
+                </div>
+
+                <div class="modal-section">
+                    <h3>3. Data Processing Principles</h3>
+                    <p><strong>3.1.</strong> All Personal Data shall be processed lawfully, fairly, and transparently.</p>
+                    <p><strong>3.2.</strong> Data collection is limited to purposes specified in our Privacy Policy.</p>
+                    <p><strong>3.3.</strong> We implement appropriate technical and organizational measures to ensure data security.</p>
+                </div>
+
+                <div class="modal-section">
+                    <h3>4. User Rights</h3>
+                    <p>Users have the right to:</p>
+                    <ul>
+                        <li>Access their Personal Data</li>
+                        <li>Rectify inaccurate data</li>
+                        <li>Request data deletion</li>
+                        <li>Restrict processing</li>
+                        <li>Data portability</li>
+                        <li>Object to processing</li>
+                    </ul>
+                </div>
+
+                <div class="modal-section">
+                    <h3>5. Data Security</h3>
+                    <p>We implement industry-standard security measures including encryption, access controls, and regular security assessments to protect user data against unauthorized access, disclosure, or destruction.</p>
+                </div>
+
+                <div class="modal-section">
+                    <h3>6. Data Breach Notification</h3>
+                    <p>In the event of a data breach affecting user Personal Data, we commit to notifying affected users and relevant authorities within 72 hours as required by applicable Data Protection Laws.</p>
+                </div>
+
+                <div class="modal-section">
+                    <h3>7. Data Retention</h3>
+                    <p>Personal Data will be retained only for as long as necessary to fulfill the purposes outlined in our Privacy Policy, unless a longer retention period is required by law.</p>
+                </div>
+
+                <div class="modal-section">
+                    <h3>8. International Data Transfers</h3>
+                    <p>Where Personal Data is transferred outside its original jurisdiction, we ensure appropriate safeguards are in place, such as Standard Contractual Clauses or adequacy decisions.</p>
+                </div>
+
+                <div class="legal-notice">
+                    <strong>Important Legal Notice:</strong> This Data Processing Addendum (DPA) constitutes a legally binding agreement between you (the "User") and SANTASHI. By accepting this DPA, you acknowledge and agree to be bound by its terms. This DPA supplements and forms part of our Terms of Service and Privacy Policy. 
+                    
+                    <br><br><strong>No Legal Advice:</strong> This document is provided for informational purposes only and does not constitute legal advice. We strongly recommend consulting with qualified legal counsel to ensure compliance with all applicable data protection laws in your specific jurisdiction.
+                    
+                    <br><br><strong>Governing Law:</strong> This DPA shall be governed by and construed in accordance with the laws specified in our main Terms of Service agreement.
+                    
+                    <br><br><strong>Updates and Modifications:</strong> We reserve the right to update this DPA as necessary to reflect changes in legal requirements or our processing practices. Material changes will be communicated in accordance with our Privacy Policy.
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="modalAgreeTerms" onchange="toggleAgreeButton()">
+                    <label for="modalAgreeTerms">
+                        I have read, understood, and agree to be bound by this Data Processing Addendum and its terms. 
+                        <span class="required">*</span>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="modalPrivacyPolicy" onchange="toggleAgreeButton()">
+                    <label for="modalPrivacyPolicy">
+                        I have read and agree to the Privacy Policy referenced in this DPA.
+                        <span class="required">*</span>
+                    </label>
+                </div>
+
+                <div class="modal-buttons">
+                    <button id="modalAgreeButton" class="modal-btn modal-btn-primary" disabled onclick="handleAgreement()">
+                        Agree and Continue
+                    </button>
+                    <button class="modal-btn modal-btn-secondary" onclick="handleDecline()">
+                        Decline
+                    </button>
+                </div>
+
+                <p style="margin-top: 10px; font-size: 0.8em; color: #666;">
+                    <span class="required">*</span> Required fields
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Form Container -->
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2 id="authTitle">LOG IN</h2>
+                <p id="authSubtitle">Access your account</p>
+            </div>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <div class="auth-toggle">
+                <div class="auth-option active" data-form="login">Login</div>
+                <div class="auth-option" data-form="signup">Sign Up</div>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginForm" class="form-section active">
+                <div class="user-type-selector">
+                    <div class="user-type-option active" data-type="user">User Login</div>
+                    <div class="user-type-option" data-type="admin">Admin Login</div>
+                </div>
+                
+                <form id="loginFormData" onsubmit="handleLogin(event)">
+                    <input type="hidden" name="user_type" id="userType" value="user">
+                    
+                    <div class="form-group">
+                        <label for="loginUsername">Username</label>
+                        <input type="text" id="loginUsername" name="username" placeholder="Enter your username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" name="password" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <div class="remember-forgot">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember" name="remember">
+                            <label for="remember">Remember me</label>
+                        </div>
+                        <a href="Forgotpass.html" class="forgot-password">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" class="auth-button">Log In</button>
+                    
+                    <button type="button" class="guest-button" onclick="loginAsGuest()">
+                        Log in as Guest
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Signup Form -->
+            <div id="signupForm" class="form-section">
+                <div class="user-type-selector">
+                    <div class="user-type-option active" data-type="user">User Account</div>
+                    <div class="user-type-option" data-type="admin">Admin Account</div>
+                </div>
+                
+                <form id="signupFormData" onsubmit="handleSignup(event)">
+                    <input type="hidden" name="user_type" id="signupUserType" value="user">
+                    
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="full_name" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupUsername">Username</label>
+                        <input type="text" id="signupUsername" name="username" placeholder="Choose a username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" name="password" placeholder="Create a password" required>
+                        <div class="password-strength" id="passwordStrength">
+                            <div class="password-strength-bar"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm your password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="remember-me">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <label for="terms">I agree to the <a href="#" onclick="showTermsModal(); return false;">Terms of Service</a> and <a href="#" onclick="showTermsModal(); return false;">Privacy Policy</a></label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="auth-button">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // DPA Modal Functions
+    function showTermsModal() {
+        const modal = document.getElementById('termsModal');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function hideTermsModal() {
+        const modal = document.getElementById('termsModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+    
+    function toggleAgreeButton() {
+        const agreeTerms = document.getElementById('modalAgreeTerms').checked;
+        const privacyPolicy = document.getElementById('modalPrivacyPolicy').checked;
+        const agreeButton = document.getElementById('modalAgreeButton');
+        
+        agreeButton.disabled = !(agreeTerms && privacyPolicy);
+    }
+
+    function handleAgreement() {
+        // Store acceptance in localStorage with timestamp
+        const acceptanceData = {
+            accepted: true,
+            timestamp: new Date().getTime()
+        };
+        
+        localStorage.setItem('dpaAgreement', JSON.stringify(acceptanceData));
+        
+        // Check the terms checkbox in signup form
+        document.getElementById('terms').checked = true;
+        
+        // Hide modal
+        hideTermsModal();
+        
+        // Show success message
+        showMessage('Thank you for accepting our Terms and Agreement.', 'success');
+    }
+
+    function handleDecline() {
+        if(confirm('Declining the Data Processing Addendum will restrict your access to certain features. Are you sure you want to decline?')) {
+            // Store decline in localStorage
+            localStorage.setItem('dpaAgreement', JSON.stringify({accepted: false}));
+            
+            // Uncheck the terms checkbox in signup form
+            document.getElementById('terms').checked = false;
+            
+            // Hide modal
+            hideTermsModal();
+            
+            // Show warning message
+            showMessage('You have declined the DPA. Some features may be unavailable.', 'error');
+        }
+    }
+    
+    // Check if terms should be shown on page load
+    function checkTermsAgreement() {
+        const agreement = localStorage.getItem('dpaAgreement');
+        
+        if (agreement) {
+            const agreementData = JSON.parse(agreement);
+            
+            // Check if agreement was accepted
+            if (agreementData.accepted) {
+                // Check if it's been more than 30 days since last acceptance
+                const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+                const now = new Date().getTime();
+                
+                if (agreementData.timestamp && (now - agreementData.timestamp) < thirtyDays) {
+                    // Less than 30 days since acceptance, don't show modal
+                    // Auto-check the terms checkbox
+                    document.getElementById('terms').checked = true;
+                    return;
+                }
+            }
+        }
+        
+        // Show modal if no agreement exists, was declined, or it's been more than 30 days
+        setTimeout(showTermsModal, 1000);
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('termsModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideTermsModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hideTermsModal();
+        }
+    });
+
+    // Handle Login Form Submission
+    function handleLogin(event) {
+        event.preventDefault();
+        
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        const userType = document.getElementById('userType').value;
+        
+        if (username && password) {
+            // Store user session in localStorage (simulated login)
+            const userSession = {
+                isLoggedIn: true,
+                username: username,
+                userType: userType,
+                loginTime: new Date().getTime()
+            };
+            
+            localStorage.setItem('userSession', JSON.stringify(userSession));
+            
+            showMessage('Login successful! Redirecting...', 'success');
+            
+            // Redirect after successful login
+            setTimeout(() => {
+                if (userType === 'admin') {
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }, 1000);
+        } else {
+            showMessage('Please fill in all fields', 'error');
+        }
+    }
+
+    // Handle Signup Form Submission
+    function handleSignup(event) {
+        event.preventDefault();
+        
+        const fullName = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const username = document.getElementById('signupUsername').value;
+        const password = document.getElementById('signupPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const terms = document.getElementById('terms').checked;
+        const userType = document.getElementById('signupUserType').value;
+        
+        // Check DPA agreement before signup
+        const agreement = localStorage.getItem('dpaAgreement');
+        let hasAgreed = false;
+        
+        if (agreement) {
+            try {
+                const agreementData = JSON.parse(agreement);
+                hasAgreed = agreementData.accepted === true;
+            } catch (e) {
+                console.error('Error parsing agreement:', e);
+            }
+        }
+        
+        if (!hasAgreed) {
+            showMessage('Please agree to the Terms and Conditions by accepting the Data Processing Addendum', 'error');
+            showTermsModal();
+            return;
+        }
+        
+        // Validation
+        if (!fullName || !email || !username || !password || !confirmPassword) {
+            showMessage('Please fill in all fields', 'error');
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            showMessage('Passwords do not match', 'error');
+            return;
+        }
+        
+        if (password.length < 8) {
+            showMessage('Password must be at least 8 characters long', 'error');
+            return;
+        }
+        
+        if (!terms) {
+            showMessage('Please agree to the terms and conditions', 'error');
+            return;
+        }
+        
+        // Store user data in localStorage (simulated signup)
+        const userData = {
+            fullName: fullName,
+            email: email,
+            username: username,
+            userType: userType,
+            createdAt: new Date().getTime()
+        };
+        
+        localStorage.setItem('user_' + username, JSON.stringify(userData));
+        
+        showMessage('Account created successfully! Redirecting to login...', 'success');
+        
+        // Switch to login form after successful signup
+        setTimeout(() => {
+            document.querySelector('.auth-option[data-form="login"]').click();
+            document.getElementById('signupFormData').reset();
+            document.getElementById('passwordStrength').className = 'password-strength';
+        }, 1500);
+    }
+
+    // Guest login function
+    function loginAsGuest() {
+        console.log('Guest login function called');
+        
+        // Store guest session in localStorage
+        const guestSession = {
+            isGuest: true,
+            loginTime: new Date().getTime(),
+            userType: 'guest',
+            username: 'Guest User'
+        };
+        
+        localStorage.setItem('userSession', JSON.stringify(guestSession));
+        localStorage.setItem('isGuest', 'true');
+        
+        console.log('Guest session saved to localStorage');
+        
+        // Show message
+        showMessage('Logging in as guest...', 'success');
+        
+        // Redirect to index.html after a brief delay
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 500);
+        
+        return false;
+    }
+
+    // Function to show messages
+    function showMessage(message, type) {
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        
+        if (type === 'error') {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        } else {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+        
+        // Auto-hide message after 5 seconds
+        setTimeout(() => {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }, 5000);
+    }
+
+    // Main initialization
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check terms agreement on page load
+        checkTermsAgreement();
+        
+        // DOM Elements
+        const authOptions = document.querySelectorAll('.auth-option');
+        const userTypeOptions = document.querySelectorAll('.user-type-option');
+        const formSections = document.querySelectorAll('.form-section');
+        const authTitle = document.getElementById('authTitle');
+        const authSubtitle = document.getElementById('authSubtitle');
+        const passwordInput = document.getElementById('signupPassword');
+        const passwordStrength = document.getElementById('passwordStrength');
+        
+        // Handle auth toggle (login/signup)
+        authOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const formType = this.dataset.form;
+                
+                // Update active state
+                authOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show correct form
+                formSections.forEach(section => section.classList.remove('active'));
+                document.getElementById(`${formType}Form`).classList.add('active');
+                
+                // Update title and subtitle
+                if (formType === 'login') {
+                    authTitle.textContent = 'LOG IN';
+                    authSubtitle.textContent = 'Access your account';
+                } else {
+                    authTitle.textContent = 'SIGN UP';
+                    authSubtitle.textContent = 'Create a new account';
+                }
+                
+                // Clear messages
+                document.getElementById('errorMessage').style.display = 'none';
+                document.getElementById('successMessage').style.display = 'none';
+            });
+        });
+        
+        // Handle user type selection
+        userTypeOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const parentForm = this.closest('.form-section').id;
+                const userType = this.dataset.type;
+                
+                // Update active state for the current form only
+                const currentOptions = this.parentElement.querySelectorAll('.user-type-option');
+                currentOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update the correct hidden field
+                if (parentForm === 'loginForm') {
+                    document.getElementById('userType').value = userType;
+                } else {
+                    document.getElementById('signupUserType').value = userType;
+                }
+            });
+        });
+        
+        // Password strength indicator
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+                
+                if (password.length >= 8) strength++;
+                if (/[A-Z]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+                
+                // Update strength indicator
+                passwordStrength.className = 'password-strength';
+                if (password.length > 0) {
+                    if (strength < 2) {
+                        passwordStrength.classList.add('weak');
+                    } else if (strength < 4) {
+                        passwordStrength.classList.add('medium');
+                    } else {
+                        passwordStrength.classList.add('strong');
+                    }
+                }
+            });
+        }
+    });
+    </script>
+</body>
+</html>
