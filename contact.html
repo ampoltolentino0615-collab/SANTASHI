@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SANTASHI - Schedule a Test Drive</title>
+  <meta name="description" content="Schedule a test drive for your dream car">
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,400italic,700' rel='stylesheet' type='text/css'>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/font-awesome.min.css" rel="stylesheet">
+  <link href="css/templatemo-style.css" rel="stylesheet">
+  <style>
+    .schedule-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 9999;
+      overflow-y: auto;
+    }
+    
+    .schedule-modal {
+      background-color: #fff;
+      margin: 50px auto;
+      width: 90%;
+      max-width: 700px;
+      border-radius: 5px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+    
+    .schedule-header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 15px 20px;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .schedule-header h3 {
+      margin: 0;
+      font-size: 1.5em;
+    }
+    
+    .close-schedule {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5em;
+      cursor: pointer;
+    }
+    
+    .schedule-body {
+      padding: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 0 -10px;
+    }
+    
+    .form-col {
+      flex: 1;
+      padding: 0 10px;
+      min-width: 200px;
+    }
+    
+    .schedule-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+      width: 100%;
+    }
+    
+    .schedule-btn:hover {
+      background-color: #c0392b;
+    }
+    
+    .schedule-trigger {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 15px 0;
+      display: inline-block;
+    }
+    
+    .schedule-trigger:hover {
+      background-color: #c0392b;
+    }
+    
+    .calendar-container {
+      margin-top: 20px;
+      border: 1px solid #eee;
+      border-radius: 5px;
+      padding: 15px;
+    }
+    
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .calendar-nav {
+      background: none;
+      border: none;
+      font-size: 1.2em;
+      cursor: pointer;
+      color: #e74c3c;
+    }
+    
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+    
+    .calendar-day {
+      text-align: center;
+      padding: 8px 0;
+      font-weight: bold;
+      background-color: #f5f5f5;
+    }
+    
+    .calendar-date {
+      text-align: center;
+      padding: 10px 0;
+      border: 1px solid #eee;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .calendar-date:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .calendar-date.selected {
+      background-color: #e74c3c;
+      color: white;
+    }
+    
+    .calendar-date.unavailable {
+      background-color: #f8d7da;
+      color: #721c24;
+      cursor: not-allowed;
+    }
+    
+    .time-slots {
+      margin-top: 20px;
+      border: 1px solid #eee;
+      border-radius: 5px;
+      padding: 15px;
+    }
+    
+    .time-slot {
+      display: inline-block;
+      padding: 8px 15px;
+      margin: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .time-slot:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .time-slot.selected {
+      background-color: #e74c3c;
+      color: white;
+      border-color: #e74c3c;
+    }
+    
+    .form-section-title {
+      margin-top: 25px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      color: #2c3e50;
+    }
+    
+    .form-message {
+      display: none;
+      margin-bottom: 20px;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    
+    .form-message.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .form-message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    @media (max-width: 768px) {
+      .form-col {
+        flex: 100%;
+        margin-bottom: 15px;
+      }
+      
+      .schedule-modal {
+        width: 95%;
+        margin: 20px auto;
+      }
+      
+      .calendar-grid {
+        grid-template-columns: repeat(7, 1fr);
+      }
+      
+      .calendar-date {
+        padding: 8px 0;
+        font-size: 0.9em;
+      }
+    }
+    
+.tm-employees-section {
+  padding: 60px 0;
+  background-color: #f9f9f9;
+}
+
+.employee-row {
+  margin-top: 40px;
+}
+
+.employee-card {
+  margin-bottom: 30px;
+}
+
+.employee-info {
+  background-color: white;
+  border-radius: 5px;
+  padding: 25px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.employee-info:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.location-title {
+  color: #2c3e50;
+  border-bottom: 2px solid #e74c3c;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  font-size: 1.4em;
+}
+
+.employee-item {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.employee-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.employee-item h4 {
+  color: #2c3e50;
+  margin-bottom: 5px;
+  font-size: 1.2em;
+}
+
+.employee-role {
+  color: #e74c3c;
+  font-weight: bold;
+  margin-bottom: 8px;
+  font-size: 0.95em;
+}
+
+.employee-contact {
+  margin-bottom: 3px;
+  font-size: 0.9em;
+  color: #555;
+}
+
+@media (max-width: 991px) {
+  .employee-card {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .tm-employees-section {
+    padding: 40px 0;
+  }
+  
+  .employee-info {
+    padding: 20px;
+  }
+}
+  </style>
+
+</head>
+<body class="contact-page">
+  
+  <div id="loader-wrapper">
+    <div id="loader"></div>
+    <div class="loader-section section-left"></div>
+    <div class="loader-section section-right"></div>
+  </div>
+  
+  <div class="schedule-overlay" id="scheduleOverlay">
+    <div class="schedule-modal">
+      <div class="schedule-header">
+        <h3>Schedule a Test Drive</h3>
+        <button class="close-schedule" id="closeSchedule">&times;</button>
+      </div>
+      <div class="schedule-body">
+        <div id="schedule-form-message" class="form-message"></div>
+        
+        <form id="scheduleForm">
+          <h4 class="form-section-title">Personal Information</h4>
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label for="scheduleName">Full Name *</label>
+                <input type="text" id="scheduleName" name="name" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label for="scheduleEmail">Email *</label>
+                <input type="email" id="scheduleEmail" name="email" class="form-control" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-col">
+              <div class="form-group">
+                <label for="schedulePhone">Phone Number *</label>
+                <input type="tel" id="schedulePhone" name="phone" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-col">
+              <div class="form-group">
+                <label for="scheduleCar">Car Model *</label>
+                <select id="scheduleCar" name="car" class="form-control" required>
+                  <option value="">Select a car model</option>
+                  <option value="Nissan GT-R">Nissan GT-R</option>
+                  <option value="Toyota Supra">Toyota Supra</option>
+                  <option value="Mitsubishi Lancer Evolution">Mitsubishi Lancer Evolution</option>
+                  <option value="Nissan 370Z">Nissan 370Z</option>
+                  <option value="Toyota 86">Toyota 86</option>
+                  <option value="Mitsubishi Eclipse Cross">Mitsubishi Eclipse Cross</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <h4 class="form-section-title">Select Date & Time</h4>
+          <div class="calendar-container">
+            <div class="calendar-header">
+              <button class="calendar-nav" id="prevMonth">&lt;</button>
+              <h5 id="currentMonth">January 2024</h5>
+              <button class="calendar-nav" id="nextMonth">&gt;</button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+            </div>
+          </div>
+          
+          <div class="time-slots">
+            <h5>Available Time Slots</h5>
+            <div id="timeSlots">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="scheduleNotes">Additional Notes</label>
+            <textarea id="scheduleNotes" name="notes" class="form-control" rows="3" placeholder="Any specific requirements or questions..."></textarea>
+          </div>
+          
+          <button type="submit" class="schedule-btn">Schedule Test Drive</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <section class="templatemo-top-section">
+    <div class="templatemo-header">
+      <img class="templatemo-header-img" src="img/header.png" alt="Header">
+      <h1 class="templatemo-site-name">Motor</h1>
+      <div class="mobile-menu-icon">
+        <i class="fa fa-bars"></i>
+      </div>
+      <div class="templatemo-nav-container">
+        <nav class="templatemo-nav">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="services.html">Payment</a></li>
+            <li><a href="contact.html" class="active">Contact</a></li>
+            <li><a href="login.html">Logout</a></li>
+          </ul>
+        </nav> 
+      </div>
+    </div>
+    <div class="templatemo-welcome welcome-slider">
+      <div class="container">
+        <div class="row">
+          <div class="flexslider">
+            <ul class="slides">
+              <li>
+                <div class="about-slider">
+                  <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                    <img src="img/about/SANTASHI.jpg" class="img-responsive" alt="Image">
+                  </div>
+                  <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 about-slider-description">
+                    <h2 class="text-uppercase welcome-title">
+                      <span class="welcome-title-1">Performance</span>
+                      <span class="welcome-title-2">for the speed</span>
+                    </h2>
+                  </div>              
+                </div>  
+              </li>
+              <li>
+                <div class="about-slider">
+                  <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                    <img src="img/about/SANTASHI.jpg" class="img-responsive" alt="Image">
+                  </div>
+                  <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12 about-slider-description">
+                    <h2 class="text-uppercase welcome-title">
+                      <span class="welcome-title-1">Find to own</span>
+                      <span class="welcome-title-2">the fast &amp; best</span>
+                    </h2>
+                  </div>              
+                </div>  
+              </li>
+            </ul>
+          </div>                          
+        </div>    
+      </div>
+    </div>
+  </section>
+    
+  <section class="container tm-contact-main">
+    <div class="row">
+      <div class="google-map-container">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d61714.6025490763!2d121.04816784476449!3d14.816126316884127!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397afa422693581%3A0x981101434383975d!2sSJDM%2C%20Bulacan!5e0!3m2!1sen!2sph!4v1757165137627!5m2!1sen!2sph" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+    <div class="row">
+      <div class="contact-form-container">
+        <h2 class="contact-title">Contact Us</h2>
+        <p>You can contact us by filling up this form and send your suggestion and feedback via email, also you can book a test drive using the button below.</p>
+        <button class="schedule-trigger" id="openSchedule">Book a Test Drive</button>
+        
+        <div id="contact-form-message" class="form-message"></div>
+        
+        <form id="contactForm" class="tm-contact-form">
+          <input type="hidden" name="access_key" value="5c94c253-8825-4449-a6e9-7f808cb55b2c">
+          <input type="hidden" name="subject" value="New Contact Form Submission from Santashi Website">
+          
+          <div class="col-lg-5 col-md-5 contact-form-left">
+            <div class="form-group">
+              <input type="text" id="contact_name" name="name" class="form-control" placeholder="NAME" required />
+            </div>
+            <div class="form-group">
+              <input type="email" id="contact_email" name="email" class="form-control" placeholder="EMAIL" required />
+            </div>
+            <div class="form-group">
+              <input type="text" id="contact_subject" name="subject" class="form-control" placeholder="SUBJECT" required />
+            </div>                
+          </div>
+          <div class="col-lg-7 col-md-7 contact-form-right">
+            <div class="form-group margin-bottom-0">
+              <textarea id="contact_message" name="message" class="form-control" rows="6" placeholder="send us a feedback and suggestion to improve our system" required></textarea>
+            </div>
+          </div>
+          <div class="col-lg-12 col-md-12 submit-btn-container">
+            <button type="submit" class="btn text-uppercase templatemo-submit-btn">Send Message</button>  
+          </div>                        
+        </form>
+      </div>
+    </div>
+    
+    <section class="container tm-employees-section">
+      <div class="row">
+        <div class="col-lg-12">
+          <h2 class="contact-title text-center">Our Dealership Locations & Staff</h2>
+          <p class="text-center">Meet our experienced team members at different dealership locations</p>
+        </div>
+      </div>
+      
+      <div class="row employee-row">
+        <div class="col-lg-4 col-md-6 employee-card">
+          <div class="employee-info">
+            <h3 class="location-title">San Jose del Monte, Bulacan</h3>
+            <div class="employee-item">
+              <h4>Warnakulahe</h4>
+              <p class="employee-role">Sales Manager</p>
+              <p class="employee-contact">Email: warnakulahe@santashi.com</p>
+              <p class="employee-contact">Phone: (+63)9123456789</p>
+            </div>
+            <div class="employee-item">
+              <h4>Murtulok</h4>
+              <p class="employee-role">Test Drive Specialist</p>
+              <p class="employee-contact">Email: murtulok@santashi.com</p>
+              <p class="employee-contact">Phone: (+63)9876543211</p>
+            </div>
+            <div class="employee-item">
+              <h4>Watashi</h4>
+              <p class="employee-role">Customer Relations</p>
+              <p class="employee-contact">Email: watashiwa@santashi.com</p>
+              <p class="employee-contact">Phone: (+63)098989898</p>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </section>
+  </section>
+
+  <footer class="tm-footer">
+    <div class="container">
+      <div class="row margin-bottom-60">
+        <nav class="col-lg-3 col-md-3 tm-footer-nav tm-footer-div">
+          <h3 class="tm-footer-div-title">Main Menu</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="services.html">Payment</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="login.html">logout</a></li>
+          </ul>
+        </nav>
+        <div class="col-lg-5 col-md-5 tm-footer-div">
+          <h3 class="tm-footer-div-title">About Us</h3>
+          <p class="margin-top-15">At CarVision 3D, we transform car brochures into interactive experiences. With 360° 3D models, customers can explore every angle, open doors, and see the details up close. We make car shopping more engaging, immersive, and unforgettable.</p>
+        </div>
+        <div class="col-lg-4 col-md-4 tm-footer-div">
+          <h3 class="tm-footer-div-title">Get Social</h3>
+          <p>For more Info contact us in our social media's.</p>
+          <div class="tm-social-icons-container">
+            <a href="#" class="tm-social-icon"><i class="fa fa-facebook"></i></a>
+            <a href="#" class="tm-social-icon"><i class='fa fa-envelope'></i></a>
+            <a href="#" class="tm-social-icon"><i class='fa fa-instagram'></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="row tm-copyright">
+        <p class="col-lg-12 small copyright-text text-center">Copyright &copy; Car dealership</p>
+      </div>
+    </div>
+  </footer>
+  
+  <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+  <script type="text/javascript" src="js/templatemo-script.js"></script>
+  <script defer src="js/jquery.flexslider-min.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const scheduleOverlay = document.getElementById('scheduleOverlay');
+      const openScheduleBtn = document.getElementById('openSchedule');
+      const closeScheduleBtn = document.getElementById('closeSchedule');
+      const scheduleForm = document.getElementById('scheduleForm');
+      const contactForm = document.getElementById('contactForm');
+      
+      function openSchedule() {
+        scheduleOverlay.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        initializeCalendar();
+      }
+      
+      function closeSchedule() {
+        scheduleOverlay.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+      
+      openScheduleBtn.addEventListener('click', openSchedule);
+      closeScheduleBtn.addEventListener('click', closeSchedule);
+      
+      scheduleOverlay.addEventListener('click', function(e) {
+        if (e.target === scheduleOverlay) {
+          closeSchedule();
+        }
+      });
+      
+      function showFormMessage(elementId, message, isSuccess) {
+        const messageElement = document.getElementById(elementId);
+        messageElement.textContent = message;
+        messageElement.className = `form-message ${isSuccess ? 'success' : 'error'}`;
+        messageElement.style.display = 'block';
+        
+        setTimeout(() => {
+          messageElement.style.display = 'none';
+        }, 5000);
+      }
+      
+      scheduleForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = scheduleForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        
+        submitBtn.textContent = 'Scheduling...';
+        submitBtn.disabled = true;
+        
+        const formData = {
+          name: document.getElementById('scheduleName').value,
+          email: document.getElementById('scheduleEmail').value,
+          phone: document.getElementById('schedulePhone').value,
+          car: document.getElementById('scheduleCar').value,
+          date: selectedDate ? selectedDate.toDateString() : 'Not selected',
+          time: selectedTime || 'Not selected',
+          notes: document.getElementById('scheduleNotes').value,
+          type: 'Test Drive Request'
+        };
+        
+        const web3formsData = new FormData();
+        web3formsData.append('access_key', '5c94c253-8825-4449-a6e9-7f808cb55b2c');
+        web3formsData.append('subject', `Test Drive Request - ${formData.car}`);
+        web3formsData.append('name', formData.name);
+        web3formsData.append('email', formData.email);
+        web3formsData.append('phone', formData.phone);
+        web3formsData.append('car_model', formData.car);
+        web3formsData.append('preferred_date', formData.date);
+        web3formsData.append('preferred_time', formData.time);
+        web3formsData.append('message', `Test Drive Request Details:\n\nCar: ${formData.car}\nDate: ${formData.date}\nTime: ${formData.time}\nNotes: ${formData.notes}`);
+        
+        fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: web3formsData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showFormMessage('schedule-form-message', `Thank you, ${formData.name}! Your test drive for the ${formData.car} has been scheduled. We will contact you to confirm the details.`, true);
+            scheduleForm.reset();
+            closeSchedule();
+          } else {
+            throw new Error(data.message || 'Something went wrong');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showFormMessage('schedule-form-message', 'Sorry, there was an error scheduling your test drive. Please try again or contact us directly.', false);
+        })
+        .finally(() => {
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        });
+      });
+      
+      contactForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        
+        submitBtn.textContent = 'Sending...';
+        submitBtn.disabled = true;
+        
+        const formData = new FormData(contactForm);
+        
+        fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showFormMessage('contact-form-message', 'Thank you! Your message has been sent successfully. We will get back to you soon.', true);
+            contactForm.reset();
+          } else {
+            throw new Error(data.message || 'Something went wrong');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showFormMessage('contact-form-message', 'Sorry, there was an error sending your message. Please try again.', false);
+        })
+        .finally(() => {
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        });
+      });
+      
+      let currentDate = new Date();
+      let selectedDate = null;
+      let selectedTime = null;
+      
+      function initializeCalendar() {
+        updateCalendar();
+        generateTimeSlots();
+        
+        document.getElementById('prevMonth').addEventListener('click', function() {
+          currentDate.setMonth(currentDate.getMonth() - 1);
+          updateCalendar();
+        });
+        
+        document.getElementById('nextMonth').addEventListener('click', function() {
+          currentDate.setMonth(currentDate.getMonth() + 1);
+          updateCalendar();
+        });
+      }
+      
+      function updateCalendar() {
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+        ];
+        
+        document.getElementById('currentMonth').textContent = 
+          `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+        
+        const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        
+        const calendarGrid = document.getElementById('calendarGrid');
+        calendarGrid.innerHTML = '';
+        
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        days.forEach(day => {
+          const dayElement = document.createElement('div');
+          dayElement.className = 'calendar-day';
+          dayElement.textContent = day;
+          calendarGrid.appendChild(dayElement);
+        });
+        
+        for (let i = 0; i < firstDay.getDay(); i++) {
+          const emptyCell = document.createElement('div');
+          calendarGrid.appendChild(emptyCell);
+        }
+        
+        for (let day = 1; day <= lastDay.getDate(); day++) {
+          const dateElement = document.createElement('div');
+          dateElement.className = 'calendar-date';
+          dateElement.textContent = day;
+          
+          const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+          
+          if (date.getDay() === 0 || date.getDay() === 6) {
+            dateElement.classList.add('unavailable');
+          } else {
+            dateElement.addEventListener('click', function() {
+              document.querySelectorAll('.calendar-date').forEach(el => {
+                el.classList.remove('selected');
+              });
+              
+              dateElement.classList.add('selected');
+              selectedDate = date;
+              
+              generateTimeSlots();
+            });
+          }
+          
+          calendarGrid.appendChild(dateElement);
+        }
+      }
+      
+      function generateTimeSlots() {
+        const timeSlotsContainer = document.getElementById('timeSlots');
+        timeSlotsContainer.innerHTML = '';
+        
+        for (let hour = 9; hour <= 17; hour++) {
+          const timeSlot = document.createElement('div');
+          timeSlot.className = 'time-slot';
+          timeSlot.textContent = `${hour}:00`;
+          
+          timeSlot.addEventListener('click', function() {
+            document.querySelectorAll('.time-slot').forEach(el => {
+              el.classList.remove('selected');
+            });
+            
+            timeSlot.classList.add('selected');
+            selectedTime = timeSlot.textContent;
+          });
+          
+          timeSlotsContainer.appendChild(timeSlot);
+        }
+      }
+    });
+
+    $(window).load(function() {
+      $('.flexslider').flexslider({
+        animation: "slide",
+        slideshow: false,
+        prevText: "&#xf104;",
+        nextText: "&#xf105;"
+      });
+
+      $('body').addClass('loaded');
+    });
+  </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadAboutUsContent();
+});
+
+function loadAboutUsContent() {
+    const aboutUsElement = document.querySelector('.tm-footer-div p.margin-top-15');
+    const savedAboutUs = localStorage.getItem('aboutUsContent');
+    
+    if (aboutUsElement && savedAboutUs) {
+        const paragraphs = savedAboutUs.split('\n').filter(p => p.trim() !== '');
+        if (paragraphs.length > 0) {
+            aboutUsElement.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+        } else {
+            aboutUsElement.textContent = savedAboutUs;
+        }
+    } else if (aboutUsElement && !savedAboutUs) {
+        aboutUsElement.textContent = 'At CarVision 3D, we transform car brochures into interactive experiences. With 360° 3D models, customers can explore every angle, open doors, and see the details up close. We make car shopping more engaging, immersive, and unforgettable.';
+    }
+}
+
+window.addEventListener('storage', function(e) {
+    if (e.key === 'aboutUsContent') {
+        loadAboutUsContent();
+    }
+});
+</script>
+</body>
+</html>
