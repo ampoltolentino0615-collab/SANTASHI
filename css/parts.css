@@ -1,0 +1,245 @@
+#config {
+	width:875px;
+}
+
+#loadingIndicator {
+	width: 875px;
+    top: 260px;
+}
+
+#exteriorStage{
+	width: 875px;
+    height: 525px;
+}
+
+#interiorStage {
+	width: 875px;
+    height: 525px;
+}
+
+#fp-descriptions div.description{
+    top: 62px;
+    left: 447px;
+}
+
+#selectMenu .summaryBlockLeft{
+	margin-left:4px;
+}
+
+#selectMenu .summaryBlockRight{
+	width:452px;
+}
+
+#selectMenu .summaryBlockLeft dt{
+	width:298px;
+}
+
+#selectMenu .summaryBlockLeft dd{
+	width:298px;
+}
+
+#selectMenu .summaryBlockRight dt{
+	width:440px;
+}
+
+#selectMenu .summaryBlockRight dd{
+	width:440px;
+}
+
+#stage{
+    width: 875px;
+    height: 525px;
+}
+
+#modeSelect{
+	top:475px;
+	width:159px;
+	height:25px;
+}
+#modeSelect>span {
+	width:159px;
+	height:25px;
+}
+
+#modeSelect #EXTERIOR {
+	background:url(../image/mode_switch_btn2.png) no-repeat;
+}
+
+#modeSelect #INTERIOR {
+	background:url(../image/mode_switch_btn1.png) no-repeat;
+}
+
+#header{
+	width:875px;
+}
+
+#indicator{
+	top:468px;
+}
+
+#indicator ul li{
+	margin:0px 2px;
+}
+
+#gradeName{
+	top:470px;
+	width:165px;
+}
+
+#exteriorItems ul.menuTab{
+	width:845px;
+}
+
+#exteriorItems ul.menuTab li{
+	width:159px;
+}
+
+#exteriorItems ul.menuTab li a{
+	width:159px;
+}
+
+#exteriorItems ul.menuTab li{
+	background:url(../image/menu_tab.png) no-repeat;
+}
+
+#exteriorItems ul.menuTab li.menuTab-GRD {background-position:    0px 0px;}
+#exteriorItems ul.menuTab li.menuTab-EXT_BDC {background-position: -159px 0px;}
+#exteriorItems ul.menuTab li.menuTab-EXT_WHL {background-position: -318px 0px;}
+#exteriorItems ul.menuTab li.menuTab-EXT_OPT {background-position: -477px 0px;}
+#exteriorItems ul.menuTab li.menuTab-SMR {background-position: -636px 0px;}
+#exteriorItems ul.menuTab li.menuTab-INT_COL {background-position: -795px 0px;}
+#exteriorItems ul.menuTab li.menuTab-NULL {background-position: -954px 0px;}
+
+#exteriorItems ul.menuTab li.menuTab-GRD.tabOn {background-position:    0px -85px;}
+#exteriorItems ul.menuTab li.menuTab-EXT_BDC.tabOn {background-position: -159px -85px;}
+#exteriorItems ul.menuTab li.menuTab-EXT_WHL.tabOn {background-position: -318px -85px;}
+#exteriorItems ul.menuTab li.menuTab-EXT_OPT.tabOn {background-position: -477px -85px;}
+#exteriorItems ul.menuTab li.menuTab-SMR.tabOn {background-position: -636px -85px;}
+#exteriorItems ul.menuTab li.menuTab-INT_COL.tabOn {background-position: -795px -85px;}
+
+#INT_BOX_WRAP1 {
+	top: -377px;
+	left: -202px;
+    -webkit-perspective: 500px;
+    -moz-perspective: 500px;
+}
+
+#INT_BOX_WRAP2 {
+    -webkit-transform: translateZ(500px);
+    -moz-transform: translateZ(500px);
+}
+
+#featuresSwitch
+{
+	width:137px;
+	height:25px;
+	background:url(../image/fp_base.png) no-repeat;
+}
+
+#featuresSwitch .fpSwitchBtn{
+	width:67px;
+	height:25px;
+	background:url(../image/fp_switch_btn2.png) no-repeat;
+}
+
+#featuresSwitch .fpSwitchBtn.on{
+	background:url(../image/fp_switch_btn1.png) no-repeat;
+}
+
+#intfunc-point {
+	left: 0;
+	position: absolute;
+	top: 0;
+	z-index: 10050;
+}
+
+#intfp-descriptions {
+	display: none;
+	left: 0;
+	position: absolute;
+	top: 0;
+}
+
+#intfp-descriptions .fp-closeBtn {
+	background-image: url("../../assets/image/fp_close_btn.png");
+	background-repeat: no-repeat;
+	cursor: pointer;
+	float: right;
+	height: 30px;
+	width: 30px;
+}
+
+#intfp-descriptions div.description {
+	background-color: #fff;
+	box-shadow: 5px 5px rgba(0, 0, 0, .1);
+	left: 105px;
+	padding: 1px;
+	position: absolute;
+	top: 20px;
+	width: 670px;
+}
+
+#intfp-descriptions .fp-label {
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 1;
+	padding: 14px 15px;
+}
+
+#INTFP_list {
+	background-color: #f2f0eb;
+	box-sizing: border-box;
+	height: 205px;
+	left: 240px;
+	padding: 16px 0 0 16px;
+	position: absolute;
+	top: 0;
+	width: 595px;
+}
+
+#INTFP_list .intfp_head {
+	color: #003145;
+	font-size: 13px;
+	font-weight: bold;
+	margin-bottom: 9px;
+	padding-left: 4px;
+}
+
+#INTFP_list #INTFP-A {
+	margin-right: 9px;
+}
+
+#INTFP_list dt {
+	color: #333;
+	font-size: 10px;
+	font-weight: bold;
+	height: auto;
+	padding-left: 4px;
+}
+
+#INTFP_list dd {
+	height: 86px;
+	margin-right: 5px;
+	width: 86px;
+}
+
+#INTFP_list dd.fpType:hover div.itemIcon div.infoIcon {
+	background-image: url("../../assets/image/fp_int_icon.png");
+	background-repeat: no-repeat;
+	background-position: right -1px bottom -1px;
+}
+
+#INTFP_list dd div.itemIcon {
+	border-color: #f2f0eb;
+	height: 78px;
+	width: 78px;
+}
+
+#INTFP_list dd .itemLabel {
+	margin-left: 3px;
+	margin-top: 10px;
+}
+
+#INTFP_list .itemDescription {
+		display: none;
+}
